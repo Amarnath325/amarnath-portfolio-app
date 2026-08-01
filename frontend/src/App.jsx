@@ -18,12 +18,44 @@ import {
 } from './api';
 
 const DEFAULT_NAV_MENUS = [
-  { id: 'about', label: 'About', icon: 'fa-solid fa-user', type: 'section', target: 'about', page_content: '', visible: true, isBtn: false },
-  { id: 'skills', label: 'Skills', icon: 'fa-solid fa-code', type: 'section', target: 'skills', page_content: '', visible: true, isBtn: false },
-  { id: 'experience', label: 'Experience', icon: 'fa-solid fa-briefcase', type: 'section', target: 'experience', page_content: '', visible: true, isBtn: false },
-  { id: 'projects', label: 'Projects', icon: 'fa-solid fa-folder-open', type: 'section', target: 'projects', page_content: '', visible: true, isBtn: false },
-  { id: 'admin', label: 'Admin', icon: 'fa-solid fa-lock', type: 'route', target: '/admin/login', page_content: '', visible: true, isBtn: false },
-  { id: 'contact', label: 'Hire Me', icon: 'fa-solid fa-envelope', type: 'section', target: 'contact', page_content: '', visible: true, isBtn: true }
+  { id: 'about', label: 'About', icon: 'fa-solid fa-user', type: 'section', target: 'about', blocks: [], visible: true, isBtn: false },
+  { id: 'skills', label: 'Skills', icon: 'fa-solid fa-code', type: 'section', target: 'skills', blocks: [], visible: true, isBtn: false },
+  { id: 'experience', label: 'Experience', icon: 'fa-solid fa-briefcase', type: 'section', target: 'experience', blocks: [], visible: true, isBtn: false },
+  { id: 'projects', label: 'Projects', icon: 'fa-solid fa-folder-open', type: 'section', target: 'projects', blocks: [], visible: true, isBtn: false },
+  { 
+    id: 'services', 
+    label: 'Services & Solutions', 
+    icon: 'fa-solid fa-layer-group', 
+    type: 'route', 
+    target: '/services', 
+    blocks: [
+      { id: 'b1', type: 'heading', level: 'h1', text: 'Enterprise Development & Architecture Solutions', align: 'left' },
+      { id: 'b2', type: 'text', content: 'Specializing in high-performance Laravel backend architectures, custom React frontend SPAs, and scalable REST API design for modern enterprise platforms.' },
+      { 
+        id: 'b3', 
+        type: 'image_left_text_right', 
+        imageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80', 
+        heading: 'Scalable Microservices & REST API Engines', 
+        text: 'Building robust, decoupled API architectures connecting Laravel 11 backends with React frontend frameworks, backed by MySQL and Redis caching.',
+        buttonText: 'Get In Touch',
+        buttonUrl: '#contact'
+      },
+      { 
+        id: 'b4', 
+        type: 'text_left_image_right', 
+        imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80', 
+        heading: 'AI & Cloud Infrastructure Integration', 
+        text: 'Integrating AWS Rekognition biometric engines, OpenAI ChatGPT API, and Docker containerized deployments on Vercel and Render.',
+        buttonText: 'Explore Projects',
+        buttonUrl: '#projects'
+      },
+      { id: 'b5', type: 'callout', title: 'Need Custom Architecture Consultation?', desc: 'Available for lead backend role, system optimization, or complete end-to-end full stack web application development.', icon: 'fa-rocket' }
+    ], 
+    visible: true, 
+    isBtn: false 
+  },
+  { id: 'admin', label: 'Admin', icon: 'fa-solid fa-lock', type: 'route', target: '/admin/login', blocks: [], visible: true, isBtn: false },
+  { id: 'contact', label: 'Hire Me', icon: 'fa-solid fa-envelope', type: 'section', target: 'contact', blocks: [], visible: true, isBtn: true }
 ];
 
 function App() {
@@ -165,6 +197,59 @@ function App() {
     setTimeout(() => setNavSaveStatus(''), 3000);
   };
 
+  // Block Builder Helper Handlers
+  const addBlockToMenu = (blockType) => {
+    const blocks = modalItem.blocks || [];
+    let newBlock = { id: 'blk_' + Date.now(), type: blockType };
+
+    if (blockType === 'heading') {
+      newBlock = { ...newBlock, level: 'h2', text: 'New Section Heading', align: 'left' };
+    } else if (blockType === 'text') {
+      newBlock = { ...newBlock, content: 'Enter your paragraph content here. You can explain your features, architectural stack, or case studies.' };
+    } else if (blockType === 'image_left_text_right' || blockType === 'text_left_image_right') {
+      newBlock = { 
+        ...newBlock, 
+        imageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80', 
+        heading: 'Feature Highlight Title', 
+        text: 'Detailed description text explaining your services or solutions.',
+        buttonText: 'Learn More',
+        buttonUrl: '#contact'
+      };
+    } else if (blockType === 'callout') {
+      newBlock = { ...newBlock, title: 'Important Announcement', desc: 'Callout text highlighting key features or special services.', icon: 'fa-circle-info' };
+    } else if (blockType === 'code') {
+      newBlock = { ...newBlock, title: 'API Response Example', code: '{\n  "status": true,\n  "message": "Laravel API Success"\n}' };
+    }
+
+    setModalItem({ ...modalItem, blocks: [...blocks, newBlock] });
+  };
+
+  const updateBlockInMenu = (index, updatedBlock) => {
+    const blocks = [...(modalItem.blocks || [])];
+    blocks[index] = updatedBlock;
+    setModalItem({ ...modalItem, blocks });
+  };
+
+  const removeBlockFromMenu = (index) => {
+    const blocks = [...(modalItem.blocks || [])];
+    blocks.splice(index, 1);
+    setModalItem({ ...modalItem, blocks });
+  };
+
+  const moveBlockOrder = (index, direction) => {
+    const blocks = [...(modalItem.blocks || [])];
+    if (direction === 'up' && index > 0) {
+      const temp = blocks[index];
+      blocks[index] = blocks[index - 1];
+      blocks[index - 1] = temp;
+    } else if (direction === 'down' && index < blocks.length - 1) {
+      const temp = blocks[index];
+      blocks[index] = blocks[index + 1];
+      blocks[index + 1] = temp;
+    }
+    setModalItem({ ...modalItem, blocks });
+  };
+
   const handleSaveModalItem = async (e) => {
     e.preventDefault();
     if (modalType === 'project') {
@@ -188,7 +273,8 @@ function App() {
           ...modalItem, 
           id: 'custom_' + Date.now(), 
           visible: true,
-          type: modalItem.type || 'section'
+          type: modalItem.type || 'section',
+          blocks: modalItem.blocks || []
         };
         updated = [...navMenus, newItem];
       }
@@ -378,7 +464,7 @@ function App() {
           <nav style={{ flex: 1, padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {[
               { id: 'dashboard', label: 'Overview', icon: 'fa-chart-pie' },
-              { id: 'nav_menus', label: 'Header Navigation CMS', icon: 'fa-bars-staggered' },
+              { id: 'nav_menus', label: 'WordPress Block CMS', icon: 'fa-cubes' },
               { id: 'profile', label: 'Profile & Bio', icon: 'fa-user-gear' },
               { id: 'projects', label: 'Projects Manager', icon: 'fa-folder-kanban' },
               { id: 'skills', label: 'Skills & Stack', icon: 'fa-code' },
@@ -518,8 +604,8 @@ function App() {
                   </div>
 
                   <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(34, 197, 94, 0.2)', color: '#4ade80', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem' }}><i className="fa-solid fa-bars-staggered"></i></div>
-                    <div><div style={{ fontSize: '1.5rem', fontWeight: 800 }}>{navMenus.length}</div><div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Header Menus</div></div>
+                    <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(34, 197, 94, 0.2)', color: '#4ade80', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem' }}><i className="fa-solid fa-cubes"></i></div>
+                    <div><div style={{ fontSize: '1.5rem', fontWeight: 800 }}>{navMenus.length}</div><div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Dynamic CMS Menus</div></div>
                   </div>
 
                   <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -547,20 +633,20 @@ function App() {
               </div>
             )}
 
-            {/* TAB 2: HEADER NAVIGATION FULL CRUD CMS MANAGER */}
+            {/* TAB 2: WORDPRESS ELEMENTOR-STYLE BLOCK BUILDER CMS */}
             {activeTab === 'nav_menus' && (
               <div style={{ background: 'rgba(15, 23, 42, 0.85)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '16px', padding: '28px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                   <div>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#818cf8' }}><i className="fa-solid fa-bars-staggered"></i> Frontend Header Navigation CMS (FULL CRUD)</h3>
-                    <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginTop: '4px' }}>Create custom menus, set target (Same Page Section vs New Page Route vs External URL), and edit dynamic page content!</p>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#818cf8' }}><i className="fa-solid fa-cubes"></i> WordPress-Style Visual Content Block CMS</h3>
+                    <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginTop: '4px' }}>Add H1/H2/H3 Headings, Text Paragraphs, Left Image + Right Content, and Alert Banners to any dynamic route page!</p>
                   </div>
                   <div style={{ display: 'flex', gap: '12px' }}>
                     <button 
-                      onClick={() => { setModalType('nav_menu'); setModalItem({ label: '', icon: 'fa-solid fa-link', type: 'section', target: 'about', page_content: '', visible: true, isBtn: false }); setModalOpen(true); }}
+                      onClick={() => { setModalType('nav_menu'); setModalItem({ label: '', icon: 'fa-solid fa-layer-group', type: 'route', target: '/new-page', blocks: [], visible: true, isBtn: false }); setModalOpen(true); }}
                       style={{ padding: '10px 18px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
                     >
-                      <i className="fa-solid fa-plus"></i> Add New Header Menu
+                      <i className="fa-solid fa-plus"></i> Create New Page
                     </button>
                     <button 
                       onClick={handleSaveNavConfig}
@@ -573,7 +659,7 @@ function App() {
 
                 {navSaveStatus === 'success' && (
                   <div style={{ color: '#4ade80', padding: '12px', background: 'rgba(34,197,94,0.15)', borderRadius: '10px', marginBottom: '20px', fontSize: '0.9rem' }}>
-                    ✓ Frontend Header Navigation Config updated successfully!
+                    ✓ Frontend Header Navigation & Block CMS updated successfully!
                   </div>
                 )}
 
@@ -588,19 +674,19 @@ function App() {
                           <div style={{ fontWeight: 700, fontSize: '1rem', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
                             {item.label}
                             <span style={{ fontSize: '0.75rem', background: item.type === 'route' ? 'rgba(168,85,247,0.2)' : item.type === 'external' ? 'rgba(234,179,8,0.2)' : 'rgba(99,102,241,0.2)', color: item.type === 'route' ? '#c084fc' : item.type === 'external' ? '#facc15' : '#818cf8', padding: '2px 8px', borderRadius: '6px', fontWeight: 600 }}>
-                              {item.type === 'route' ? '📍 NEW PAGE ROUTE' : item.type === 'external' ? '🔗 EXTERNAL URL' : '📜 SAME PAGE SCROLL'}
+                              {item.type === 'route' ? `📍 NEW PAGE ROUTE (${(item.blocks || []).length} BLOCKS)` : item.type === 'external' ? '🔗 EXTERNAL URL' : '📜 SAME PAGE SCROLL'}
                             </span>
                           </div>
                           <div style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: '2px' }}>
-                            Target: <code style={{ color: '#818cf8' }}>{item.target}</code>
+                            Target Path: <code style={{ color: '#818cf8' }}>{item.target}</code>
                           </div>
                         </div>
                       </div>
 
                       {/* Actions & Status Toggle */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                        <button onClick={() => { setModalType('nav_menu'); setModalItem(item); setModalOpen(true); }} style={{ background: '#334155', border: 'none', color: '#fff', padding: '8px 12px', borderRadius: '8px', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <i className="fa-solid fa-pen"></i> Edit
+                        <button onClick={() => { setModalType('nav_menu'); setModalItem(item); setModalOpen(true); }} style={{ background: '#6366f1', border: 'none', color: '#fff', padding: '8px 14px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <i className="fa-solid fa-cubes-stacked"></i> Edit Visual Blocks
                         </button>
                         <button onClick={() => handleDeleteItem('nav_menu', item.id)} style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', padding: '8px 12px', borderRadius: '8px', fontSize: '0.85rem', cursor: 'pointer' }}>
                           <i className="fa-solid fa-trash"></i>
@@ -797,48 +883,120 @@ function App() {
           </div>
         </main>
 
-        {/* CRUD MODAL POPUP */}
+        {/* WORDPRESS-STYLE VISUAL BLOCK BUILDER MODAL POPUP */}
         {modalOpen && (
-          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-            <div style={{ width: '100%', maxWidth: '550px', background: '#0f172a', border: '1px solid #334155', borderRadius: '20px', padding: '28px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', maxHeight: '90vh', overflowY: 'auto' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fff', textTransform: 'capitalize' }}>Manage {modalType.replace('_', ' ')}</h3>
-                <button onClick={() => setModalOpen(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '1.2rem', cursor: 'pointer' }}>&times;</button>
+          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+            <div style={{ width: '100%', maxWidth: '750px', background: '#0f172a', border: '1px solid #334155', borderRadius: '24px', padding: '28px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.6)', maxHeight: '92vh', overflowY: 'auto' }}>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #1e293b', paddingBottom: '16px' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#fff', textTransform: 'capitalize', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i className="fa-solid fa-cubes" style={{ color: '#818cf8' }}></i> {modalType === 'nav_menu' ? 'WordPress-Style Visual Block Editor' : `Manage ${modalType}`}
+                  </h3>
+                  {modalType === 'nav_menu' && <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginTop: '2px' }}>Add H1/H2/H3 Headings, Text Paragraphs, Image Left + Content Right, and Alert Banners!</p>}
+                </div>
+                <button onClick={() => setModalOpen(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '1.4rem', cursor: 'pointer' }}>&times;</button>
               </div>
 
               <form onSubmit={handleSaveModalItem}>
                 {modalType === 'nav_menu' && (
                   <>
-                    <div style={{ marginBottom: '16px' }}>
-                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '6px' }}>Menu Label Title</label>
-                      <input type="text" style={{ width: '100%', padding: '10px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff' }} value={modalItem.label || ''} onChange={(e) => setModalItem({ ...modalItem, label: e.target.value })} placeholder="e.g. Services / Certifications" required />
-                    </div>
-                    
-                    <div style={{ marginBottom: '16px' }}>
-                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '6px' }}>Routing Type</label>
-                      <select style={{ width: '100%', padding: '10px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff' }} value={modalItem.type || 'section'} onChange={(e) => setModalItem({ ...modalItem, type: e.target.value })}>
-                        <option value="section">📜 Same Page Scroll (#section_id)</option>
-                        <option value="route">📍 Dedicated New Page Route (/custom-route)</option>
-                        <option value="external">🔗 External Link (https://...)</option>
-                      </select>
-                    </div>
-
-                    <div style={{ marginBottom: '16px' }}>
-                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '6px' }}>
-                        {modalItem.type === 'route' ? 'New Page Path (e.g. /services)' : modalItem.type === 'external' ? 'External URL (e.g. https://github.com)' : 'Section Anchor ID (e.g. about)'}
-                      </label>
-                      <input type="text" style={{ width: '100%', padding: '10px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff' }} value={modalItem.target || ''} onChange={(e) => setModalItem({ ...modalItem, target: e.target.value })} required />
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+                      <div>
+                        <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '6px' }}>Menu Label Title</label>
+                        <input type="text" style={{ width: '100%', padding: '10px 14px', background: '#1e293b', border: '1px solid #334155', borderRadius: '10px', color: '#fff' }} value={modalItem.label || ''} onChange={(e) => setModalItem({ ...modalItem, label: e.target.value })} placeholder="e.g. Services & Solutions" required />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '6px' }}>Routing Type</label>
+                        <select style={{ width: '100%', padding: '10px 14px', background: '#1e293b', border: '1px solid #334155', borderRadius: '10px', color: '#fff' }} value={modalItem.type || 'section'} onChange={(e) => setModalItem({ ...modalItem, type: e.target.value })}>
+                          <option value="section">📜 Same Page Scroll (#section_id)</option>
+                          <option value="route">📍 Dedicated New Page Route (/custom-route)</option>
+                          <option value="external">🔗 External Link (https://...)</option>
+                        </select>
+                      </div>
                     </div>
 
-                    <div style={{ marginBottom: '16px' }}>
-                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '6px' }}>FontAwesome Icon Class</label>
-                      <input type="text" style={{ width: '100%', padding: '10px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff' }} value={modalItem.icon || 'fa-solid fa-link'} onChange={(e) => setModalItem({ ...modalItem, icon: e.target.value })} required />
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+                      <div>
+                        <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '6px' }}>Target Path / ID</label>
+                        <input type="text" style={{ width: '100%', padding: '10px 14px', background: '#1e293b', border: '1px solid #334155', borderRadius: '10px', color: '#fff' }} value={modalItem.target || ''} onChange={(e) => setModalItem({ ...modalItem, target: e.target.value })} placeholder="/services or about" required />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '6px' }}>FontAwesome Icon Class</label>
+                        <input type="text" style={{ width: '100%', padding: '10px 14px', background: '#1e293b', border: '1px solid #334155', borderRadius: '10px', color: '#fff' }} value={modalItem.icon || 'fa-solid fa-layer-group'} onChange={(e) => setModalItem({ ...modalItem, icon: e.target.value })} required />
+                      </div>
                     </div>
 
+                    {/* BLOCK BUILDER CONTROL PANEL */}
                     {modalItem.type === 'route' && (
-                      <div style={{ marginBottom: '16px' }}>
-                        <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '6px' }}>Dynamic Page HTML / Markdown Content</label>
-                        <textarea rows="5" style={{ width: '100%', padding: '10px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff', fontFamily: 'monospace' }} value={modalItem.page_content || ''} onChange={(e) => setModalItem({ ...modalItem, page_content: e.target.value })} placeholder="Enter HTML content to display on this custom route page..."></textarea>
+                      <div style={{ borderTop: '1px solid #334155', paddingTop: '20px', marginBottom: '20px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                          <h4 style={{ color: '#818cf8', fontSize: '1rem', fontWeight: 700 }}><i className="fa-solid fa-square-plus"></i> Add Content Blocks (WordPress Gutenberg Style)</h4>
+                        </div>
+
+                        {/* Add Block Toolbar */}
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '20px', background: '#1e293b', padding: '12px', borderRadius: '12px', border: '1px solid #334155' }}>
+                          <button type="button" onClick={() => addBlockToMenu('heading')} style={{ padding: '8px 12px', background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', color: '#818cf8', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}><i className="fa-solid fa-heading"></i> + Heading (H1/H2/H3)</button>
+                          <button type="button" onClick={() => addBlockToMenu('text')} style={{ padding: '8px 12px', background: 'rgba(168,85,247,0.2)', border: '1px solid rgba(168,85,247,0.4)', color: '#c084fc', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}><i className="fa-solid fa-paragraph"></i> + Text Paragraph</button>
+                          <button type="button" onClick={() => addBlockToMenu('image_left_text_right')} style={{ padding: '8px 12px', background: 'rgba(34,197,94,0.2)', border: '1px solid rgba(34,197,94,0.4)', color: '#4ade80', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}><i className="fa-solid fa-file-image"></i> + Left Image + Right Text</button>
+                          <button type="button" onClick={() => addBlockToMenu('text_left_image_right')} style={{ padding: '8px 12px', background: 'rgba(56,189,248,0.2)', border: '1px solid rgba(56,189,248,0.4)', color: '#38bdf8', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}><i className="fa-solid fa-file-image"></i> + Left Text + Right Image</button>
+                          <button type="button" onClick={() => addBlockToMenu('callout')} style={{ padding: '8px 12px', background: 'rgba(234,179,8,0.2)', border: '1px solid rgba(234,179,8,0.4)', color: '#facc15', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}><i className="fa-solid fa-bullhorn"></i> + Alert Callout</button>
+                        </div>
+
+                        {/* LIST OF BLOCKS */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                          {(modalItem.blocks || []).length === 0 ? (
+                            <div style={{ textAlign: 'center', padding: '24px', border: '2px dashed #334155', borderRadius: '12px', color: '#94a3b8', fontSize: '0.9rem' }}>
+                              No content blocks added yet. Click buttons above to add Headings, Paragraphs or Image+Text blocks!
+                            </div>
+                          ) : (
+                            modalItem.blocks.map((blk, idx) => (
+                              <div key={blk.id || idx} style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '12px', padding: '16px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '8px' }}>
+                                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#818cf8', textTransform: 'uppercase' }}>
+                                    Block #{idx + 1}: {blk.type.replace(/_/g, ' ')}
+                                  </span>
+                                  <div style={{ display: 'flex', gap: '6px' }}>
+                                    <button type="button" onClick={() => moveBlockOrder(idx, 'up')} disabled={idx === 0} style={{ background: '#334155', border: 'none', color: '#fff', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}>▲</button>
+                                    <button type="button" onClick={() => moveBlockOrder(idx, 'down')} disabled={idx === modalItem.blocks.length - 1} style={{ background: '#334155', border: 'none', color: '#fff', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}>▼</button>
+                                    <button type="button" onClick={() => removeBlockFromMenu(idx)} style={{ background: 'rgba(239,68,68,0.2)', border: 'none', color: '#f87171', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}><i className="fa-solid fa-trash"></i></button>
+                                  </div>
+                                </div>
+
+                                {/* BLOCK INPUT FIELDS */}
+                                {blk.type === 'heading' && (
+                                  <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: '12px' }}>
+                                    <select value={blk.level} onChange={(e) => updateBlockInMenu(idx, { ...blk, level: e.target.value })} style={{ padding: '8px', background: '#0f172a', border: '1px solid #475569', borderRadius: '8px', color: '#fff' }}>
+                                      <option value="h1">Heading H1</option>
+                                      <option value="h2">Heading H2</option>
+                                      <option value="h3">Heading H3</option>
+                                    </select>
+                                    <input type="text" value={blk.text} onChange={(e) => updateBlockInMenu(idx, { ...blk, text: e.target.value })} placeholder="Heading text..." style={{ padding: '8px 12px', background: '#0f172a', border: '1px solid #475569', borderRadius: '8px', color: '#fff', fontWeight: 700 }} />
+                                  </div>
+                                )}
+
+                                {blk.type === 'text' && (
+                                  <textarea rows="3" value={blk.content} onChange={(e) => updateBlockInMenu(idx, { ...blk, content: e.target.value })} placeholder="Paragraph content..." style={{ width: '100%', padding: '10px', background: '#0f172a', border: '1px solid #475569', borderRadius: '8px', color: '#fff' }}></textarea>
+                                )}
+
+                                {(blk.type === 'image_left_text_right' || blk.type === 'text_left_image_right') && (
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                    <input type="text" value={blk.imageUrl} onChange={(e) => updateBlockInMenu(idx, { ...blk, imageUrl: e.target.value })} placeholder="Image URL (e.g. https://...)" style={{ padding: '8px 12px', background: '#0f172a', border: '1px solid #475569', borderRadius: '8px', color: '#fff' }} />
+                                    <input type="text" value={blk.heading} onChange={(e) => updateBlockInMenu(idx, { ...blk, heading: e.target.value })} placeholder="Column Heading..." style={{ padding: '8px 12px', background: '#0f172a', border: '1px solid #475569', borderRadius: '8px', color: '#fff', fontWeight: 700 }} />
+                                    <textarea rows="2" value={blk.text} onChange={(e) => updateBlockInMenu(idx, { ...blk, text: e.target.value })} placeholder="Column Paragraph description..." style={{ width: '100%', padding: '8px 12px', background: '#0f172a', border: '1px solid #475569', borderRadius: '8px', color: '#fff' }}></textarea>
+                                  </div>
+                                )}
+
+                                {blk.type === 'callout' && (
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                    <input type="text" value={blk.title} onChange={(e) => updateBlockInMenu(idx, { ...blk, title: e.target.value })} placeholder="Callout Title..." style={{ padding: '8px 12px', background: '#0f172a', border: '1px solid #475569', borderRadius: '8px', color: '#fff', fontWeight: 700 }} />
+                                    <textarea rows="2" value={blk.desc} onChange={(e) => updateBlockInMenu(idx, { ...blk, desc: e.target.value })} placeholder="Callout Description..." style={{ width: '100%', padding: '8px 12px', background: '#0f172a', border: '1px solid #475569', borderRadius: '8px', color: '#fff' }}></textarea>
+                                  </div>
+                                )}
+                              </div>
+                            ))
+                          )}
+                        </div>
                       </div>
                     )}
                   </>
@@ -883,9 +1041,9 @@ function App() {
                   </>
                 )}
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px', borderTop: '1px solid #1e293b', paddingTop: '16px' }}>
                   <button type="button" onClick={() => setModalOpen(false)} style={{ padding: '10px 18px', background: 'transparent', border: '1px solid #334155', color: '#cbd5e1', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button>
-                  <button type="submit" style={{ padding: '10px 18px', background: '#6366f1', border: 'none', color: '#fff', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>Save Item</button>
+                  <button type="submit" style={{ padding: '10px 24px', background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', border: 'none', color: '#fff', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>Save Page & Blocks</button>
                 </div>
               </form>
             </div>
@@ -897,13 +1055,16 @@ function App() {
   }
 
   // ==========================================
-  // ROUTE: Dynamic Custom Route Page Renderer (e.g. /services, /certifications)
+  // ROUTE: Dynamic Gutenberg/Elementor Block Page Renderer (e.g. /services, /certifications)
   // ==========================================
   const activeCustomMenu = navMenus.find(m => m.type === 'route' && m.target === route);
   if (activeCustomMenu && route !== '/' && !route.startsWith('/admin')) {
+    const blocks = activeCustomMenu.blocks || [];
+
     return (
       <div className="portfolio-app" style={{ minHeight: '100vh', background: '#090d16', color: '#fff' }}>
         <div className="bg-glow bg-glow-1"></div>
+        <div className="bg-glow bg-glow-2"></div>
         
         {/* Navbar */}
         <header className="navbar scrolled">
@@ -912,34 +1073,114 @@ function App() {
               <span className="logo-accent">&lt;</span>Amarnath<span className="logo-accent">/&gt;</span>
             </a>
             <nav className="nav-menu">
-              <button className="nav-link" onClick={() => navigateTo('/')}><i className="fa-solid fa-arrow-left"></i> Back to Home</button>
+              {navMenus.filter(m => m.visible).map((menu) => (
+                <button 
+                  key={menu.id} 
+                  className={`nav-link ${menu.isBtn ? 'nav-btn' : ''}`}
+                  onClick={() => handleNavClick(menu)}
+                >
+                  <i className={menu.icon}></i> {menu.label}
+                </button>
+              ))}
             </nav>
           </div>
         </header>
 
-        {/* Dynamic Page Hero */}
-        <div className="container" style={{ paddingTop: '120px', paddingBottom: '60px' }}>
-          <div style={{ background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '24px', padding: '40px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
-              <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'rgba(99, 102, 241, 0.2)', color: '#818cf8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.6rem' }}>
-                <i className={activeCustomMenu.icon}></i>
-              </div>
-              <div>
-                <h1 style={{ fontSize: '2.2rem', fontWeight: 800 }}>{activeCustomMenu.label}</h1>
-                <p style={{ color: '#94a3b8', fontSize: '0.95rem' }}>Dynamic Page • Route: {activeCustomMenu.target}</p>
-              </div>
+        {/* Dynamic Page Container */}
+        <div className="container" style={{ paddingTop: '120px', paddingBottom: '80px' }}>
+          
+          {/* Hero Banner for Dynamic Page */}
+          <div style={{ background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '24px', padding: '36px', marginBottom: '40px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', gap: '20px' }}>
+            <div style={{ width: '64px', height: '64px', borderRadius: '18px', background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem' }}>
+              <i className={activeCustomMenu.icon}></i>
             </div>
-
-            <div 
-              style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.8', marginTop: '28px', borderTop: '1px solid #1e293b', paddingTop: '28px' }}
-              dangerouslySetInnerHTML={{ __html: activeCustomMenu.page_content || `<p>Welcome to <strong>${activeCustomMenu.label}</strong> page! You can edit this dynamic page content anytime from the Admin Dashboard Header Navigation Manager.</p>` }}
-            />
-
-            <div style={{ marginTop: '40px' }}>
-              <button onClick={() => navigateTo('/')} className="btn btn-primary">
-                <i className="fa-solid fa-house"></i> Return to Main Portfolio
-              </button>
+            <div>
+              <h1 style={{ fontSize: '2.4rem', fontWeight: 800 }}>{activeCustomMenu.label}</h1>
+              <p style={{ color: '#94a3b8', fontSize: '0.95rem' }}>Dynamic WordPress Block CMS • Route: {activeCustomMenu.target}</p>
             </div>
+          </div>
+
+          {/* RENDER VISUAL BLOCKS */}
+          {blocks.length === 0 ? (
+            <div style={{ background: 'rgba(15, 23, 42, 0.8)', padding: '40px', borderRadius: '20px', border: '1px solid #334155', textAlign: 'center', color: '#cbd5e1' }}>
+              <h3>Welcome to {activeCustomMenu.label}!</h3>
+              <p style={{ marginTop: '8px', color: '#94a3b8' }}>No content blocks added yet. Open Admin Dashboard -&gt; WordPress Block CMS to add Headings, Left Image + Right Text, or Alert Banners!</p>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '36px' }}>
+              {blocks.map((blk, idx) => (
+                <div key={blk.id || idx}>
+                  
+                  {/* HEADING BLOCK */}
+                  {blk.type === 'heading' && (
+                    <div style={{ textAlign: blk.align || 'left', margin: '12px 0' }}>
+                      {blk.level === 'h1' && <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: '#fff' }}>{blk.text}</h1>}
+                      {blk.level === 'h2' && <h2 style={{ fontSize: '1.8rem', fontWeight: 700, color: '#818cf8' }}>{blk.text}</h2>}
+                      {blk.level === 'h3' && <h3 style={{ fontSize: '1.4rem', fontWeight: 600, color: '#cbd5e1' }}>{blk.text}</h3>}
+                    </div>
+                  )}
+
+                  {/* PARAGRAPH TEXT BLOCK */}
+                  {blk.type === 'text' && (
+                    <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#cbd5e1', background: 'rgba(15, 23, 42, 0.5)', padding: '24px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                      {blk.content}
+                    </p>
+                  )}
+
+                  {/* LEFT IMAGE + RIGHT TEXT BLOCK */}
+                  {blk.type === 'image_left_text_right' && (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', alignItems: 'center', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '24px', padding: '32px' }}>
+                      <img src={blk.imageUrl} alt={blk.heading} style={{ width: '100%', height: '280px', objectFit: 'cover', borderRadius: '16px', border: '1px solid #334155' }} />
+                      <div>
+                        <h3 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#fff', marginBottom: '12px' }}>{blk.heading}</h3>
+                        <p style={{ color: '#cbd5e1', fontSize: '1rem', lineHeight: '1.7', marginBottom: '20px' }}>{blk.text}</p>
+                        {blk.buttonText && (
+                          <button onClick={() => scrollTo('contact')} className="btn btn-primary">
+                            <i className="fa-solid fa-arrow-right"></i> {blk.buttonText}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* LEFT TEXT + RIGHT IMAGE BLOCK */}
+                  {blk.type === 'text_left_image_right' && (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', alignItems: 'center', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '24px', padding: '32px' }}>
+                      <div>
+                        <h3 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#fff', marginBottom: '12px' }}>{blk.heading}</h3>
+                        <p style={{ color: '#cbd5e1', fontSize: '1rem', lineHeight: '1.7', marginBottom: '20px' }}>{blk.text}</p>
+                        {blk.buttonText && (
+                          <button onClick={() => scrollTo('projects')} className="btn btn-secondary">
+                            <i className="fa-solid fa-rocket"></i> {blk.buttonText}
+                          </button>
+                        )}
+                      </div>
+                      <img src={blk.imageUrl} alt={blk.heading} style={{ width: '100%', height: '280px', objectFit: 'cover', borderRadius: '16px', border: '1px solid #334155' }} />
+                    </div>
+                  )}
+
+                  {/* ALERT CALLOUT BLOCK */}
+                  {blk.type === 'callout' && (
+                    <div style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(168, 85, 247, 0.2) 100%)', border: '1px solid rgba(99, 102, 241, 0.4)', borderRadius: '20px', padding: '28px', display: 'flex', alignItems: 'center', gap: '20px' }}>
+                      <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: '#6366f1', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>
+                        <i className={`fa-solid ${blk.icon || 'fa-circle-info'}`}></i>
+                      </div>
+                      <div>
+                        <h4 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fff' }}>{blk.title}</h4>
+                        <p style={{ color: '#cbd5e1', fontSize: '0.95rem', marginTop: '4px' }}>{blk.desc}</p>
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div style={{ marginTop: '48px', textAlign: 'center' }}>
+            <button onClick={() => navigateTo('/')} className="btn btn-primary">
+              <i className="fa-solid fa-house"></i> Return to Main Portfolio
+            </button>
           </div>
         </div>
       </div>

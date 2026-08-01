@@ -1,8 +1,7 @@
 FROM php:8.2-cli
 
-RUN apt-get update && apt-get install -y \
-    git unzip libsqlite3-dev libpng-dev libonig-dev libxml2-dev \
-    && docker-php-ext-install pdo pdo_sqlite mbstring bcmath
+RUN apt-get update && apt-get install -y git unzip libsqlite3-dev \
+    && docker-php-ext-install pdo pdo_sqlite
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -15,7 +14,7 @@ RUN mkdir -p database && touch database/database.sqlite
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-RUN composer update --no-dev --no-audit --no-scripts --no-interaction --ignore-platform-reqs
+RUN composer update --no-dev --optimize-autoloader --no-scripts --no-interaction
 
 RUN php artisan key:generate
 

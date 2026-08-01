@@ -11,11 +11,11 @@ COPY . .
 
 RUN if [ -d "backend" ]; then cp -a backend/. /app/ ; fi
 
-RUN mkdir -p public bootstrap/cache storage/framework/views storage/framework/sessions storage/framework/cache storage/logs
-RUN chmod -R 777 bootstrap/cache storage
+RUN mkdir -p public bootstrap/cache storage/framework/views storage/framework/sessions storage/framework/cache storage/logs database
+RUN touch database/database.sqlite
+RUN chmod -R 777 bootstrap/cache storage database
 
-RUN echo "APP_NAME=Laravel\nAPP_ENV=production\nAPP_KEY=base64:7q6V+9H3gL/3f0M2P9k+X1K0N1P2Q3R4S5T6U7V8W9X=\nAPP_DEBUG=false\nAPP_URL=http://localhost\nDB_CONNECTION=sqlite" > .env
-RUN mkdir -p database && touch database/database.sqlite
+RUN echo "APP_NAME=Laravel\nAPP_ENV=production\nAPP_KEY=base64:d3pZNWxWOGdYMXhRMnFWWjNlUjV0WTd1Tzh4Vzl6WTA=\nAPP_DEBUG=true\nAPP_URL=http://localhost\nDB_CONNECTION=sqlite\nDB_DATABASE=/app/database/database.sqlite" > .env
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 

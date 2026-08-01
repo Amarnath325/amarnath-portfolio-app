@@ -14,8 +14,9 @@ RUN echo "APP_NAME=Laravel\nAPP_ENV=production\nAPP_KEY=\nAPP_DEBUG=false\nAPP_U
 RUN mkdir -p database && touch database/database.sqlite
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV COMPOSER_NO_AUDIT=1
 
-RUN composer update --no-dev --optimize-autoloader --no-scripts --no-interaction --ignore-platform-reqs || composer install --no-dev --optimize-autoloader --no-scripts --ignore-platform-reqs
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction --ignore-platform-reqs
 
 RUN php artisan key:generate
 

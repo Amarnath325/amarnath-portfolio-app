@@ -2,11 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://amarnath-portfolio-app.onrender.com/api/:path*"
-    },
-    {
-      "source": "/admin/:path*",
-      "destination": "https://amarnath-portfolio-app.onrender.com/admin/:path*"
+      "destination": "https://admin.amarnath.info/api/:path*"
     },
     {
       "source": "/(.*)",

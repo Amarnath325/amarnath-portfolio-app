@@ -9,6 +9,8 @@ WORKDIR /app
 
 COPY . .
 
+RUN if [ -d "backend" ]; then cp -r backend/* . && rm -rf backend; fi
+
 RUN echo "APP_NAME=Laravel\nAPP_ENV=production\nAPP_KEY=\nAPP_DEBUG=false\nAPP_URL=http://localhost\nDB_CONNECTION=sqlite" > .env
 RUN mkdir -p database && touch database/database.sqlite
 

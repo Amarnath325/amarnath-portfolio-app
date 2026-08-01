@@ -9,15 +9,13 @@ WORKDIR /app
 
 COPY . .
 
-# Set working directory to backend where artisan & composer.json live
-WORKDIR /app/backend
+RUN if [ -f "backend/composer.json" ]; then cp -rn backend/* . ; fi
 
 RUN echo "APP_NAME=Laravel\nAPP_ENV=production\nAPP_KEY=\nAPP_DEBUG=false\nAPP_URL=http://localhost\nDB_CONNECTION=sqlite" > .env
 RUN mkdir -p database && touch database/database.sqlite
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-RUN composer config policy.advisories.block false
 RUN composer update --no-dev --optimize-autoloader --no-scripts --no-interaction
 
 RUN php artisan key:generate

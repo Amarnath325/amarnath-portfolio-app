@@ -14,6 +14,7 @@ RUN mkdir -p database && touch database/database.sqlite
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
+RUN composer config policy.advisories.block false
 RUN composer update --no-dev --optimize-autoloader --no-scripts --no-interaction
 
 RUN php artisan key:generate

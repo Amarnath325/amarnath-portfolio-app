@@ -1352,61 +1352,72 @@ function App() {
             </div>
           </div>
 
-          {/* Interactive Code Mockup Card */}
+          {/* Hero Visual Card: Enterprise System Architecture Spec */}
           <div className="hero-visual">
-            <div className="code-card-wrapper">
-              <div className="code-card-header">
-                <div className="mac-dots">
-                  <span className="dot red"></span><span className="dot yellow"></span><span className="dot green"></span>
+            <div style={{ 
+              background: 'rgba(15, 23, 42, 0.85)', 
+              backdropFilter: 'blur(20px)', 
+              border: '1px solid rgba(99, 102, 241, 0.35)', 
+              borderRadius: '24px', 
+              padding: '32px', 
+              boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.7)',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              {/* Card Top Title & Status */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.25rem', fontWeight: 800 }}>
+                    <i className="fa-solid fa-server"></i>
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff' }}>Enterprise Core Architecture</h3>
+                    <span style={{ fontSize: '0.78rem', color: '#38bdf8', fontWeight: 600 }}>Production System Engine • amarnath.info</span>
+                  </div>
                 </div>
-                <span className="card-title">Live Architecture API Console</span>
-                <div className="code-tabs">
-                  <button className={`code-tab ${activeCodeTab === 'api' ? 'active' : ''}`} onClick={() => setActiveCodeTab('api')}>REST API</button>
-                  <button className={`code-tab ${activeCodeTab === 'cms' ? 'active' : ''}`} onClick={() => setActiveCodeTab('cms')}>Gutenberg CMS</button>
-                  <button className={`code-tab ${activeCodeTab === 'ai' ? 'active' : ''}`} onClick={() => setActiveCodeTab('ai')}>Face Biometrics</button>
+                <span style={{ background: 'rgba(34, 197, 94, 0.15)', border: '1px solid rgba(34, 197, 94, 0.3)', color: '#4ade80', fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e' }}></span> Live API Synced
+                </span>
+              </div>
+
+              {/* Architectural Modules Grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+                <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '16px', padding: '18px' }}>
+                  <div style={{ color: '#818cf8', fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>RESTful Backend</div>
+                  <div style={{ color: '#fff', fontWeight: 800, fontSize: '1rem' }}>Laravel 11.x Core</div>
+                  <div style={{ color: '#94a3b8', fontSize: '0.78rem', marginTop: '4px' }}>Sanctum Auth • Redis Queue</div>
+                </div>
+
+                <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '16px', padding: '18px' }}>
+                  <div style={{ color: '#c084fc', fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Frontend SPA</div>
+                  <div style={{ color: '#fff', fontWeight: 800, fontSize: '1rem' }}>React 18 Engine</div>
+                  <div style={{ color: '#94a3b8', fontSize: '0.78rem', marginTop: '4px' }}>Vite • Dark Glassmorphism</div>
+                </div>
+
+                <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '16px', padding: '18px' }}>
+                  <div style={{ color: '#38bdf8', fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>AI Biometrics</div>
+                  <div style={{ color: '#fff', fontWeight: 800, fontSize: '1rem' }}>AWS Rekognition</div>
+                  <div style={{ color: '#94a3b8', fontSize: '0.78rem', marginTop: '4px' }}>Real-time Face Vectoring</div>
+                </div>
+
+                <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '16px', padding: '18px' }}>
+                  <div style={{ color: '#facc15', fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Visual Block CMS</div>
+                  <div style={{ color: '#fff', fontWeight: 800, fontSize: '1rem' }}>WordPress Builder</div>
+                  <div style={{ color: '#94a3b8', fontSize: '0.78rem', marginTop: '4px' }}>Dynamic Page Router</div>
                 </div>
               </div>
 
-              <div className="code-card-body">
-                {activeCodeTab === 'api' && (
-                  <pre><code><span style={{color: '#f472b6'}}>GET</span> /api/portfolio
-<span style={{color: '#38bdf8'}}>Status 200 OK • 28ms response</span>
-
-&#123;
-  <span style={{color: '#fbbf24'}}>"status"</span>: <span style={{color: '#34d399'}}>true</span>,
-  <span style={{color: '#fbbf24'}}>"developer"</span>: <span style={{color: '#34d399'}}>"Amarnath Chauhan"</span>,
-  <span style={{color: '#fbbf24'}}>"stack"</span>: &#123;
-    <span style={{color: '#fbbf24'}}>"backend"</span>: <span style={{color: '#34d399'}}>"Laravel 11 REST API"</span>,
-    <span style={{color: '#fbbf24'}}>"frontend"</span>: <span style={{color: '#34d399'}}>"React 18 SPA Engine"</span>,
-    <span style={{color: '#fbbf24'}}>"database"</span>: <span style={{color: '#34d399'}}>"MySQL & Redis Cache"</span>
-  &#125;
-&#125;</code></pre>
-                )}
-
-                {activeCodeTab === 'cms' && (
-                  <pre><code><span style={{color: '#f472b6'}}>POST</span> /api/admin/nav-config
-<span style={{color: '#38bdf8'}}>Status 201 Created • Dynamic Route Sync</span>
-
-&#123;
-  <span style={{color: '#fbbf24'}}>"route"</span>: <span style={{color: '#34d399'}} font-weight="700">"/services"</span>,
-  <span style={{color: '#fbbf24'}}>"type"</span>: <span style={{color: '#34d399'}}>"gutenberg_block_cms"</span>,
-  <span style={{color: '#fbbf24'}}>"blocks"</span>: [
-    &#123;<span style={{color: '#fbbf24'}}>"type"</span>: <span style={{color: '#34d399'}}>"heading_h1"</span>&#125;,
-    &#123;<span style={{color: '#fbbf24'}}>"type"</span>: <span style={{color: '#34d399'}}>"image_left_text_right"</span>&#125;
-  ]
-&#125;</code></pre>
-                )}
-
-                {activeCodeTab === 'ai' && (
-                  <pre><code><span style={{color: '#f472b6'}}>POST</span> /api/v2/face-attendance
-<span style={{color: '#38bdf8'}}>Status 200 OK • Biometric Verified</span>
-
-&#123;
-  <span style={{color: '#fbbf24'}}>"biometric_status"</span>: <span style={{color: '#34d399'}}>"VERIFIED"</span>,
-  <span style={{color: '#fbbf24'}}>"confidence"</span>: <span style={{color: '#34d399'}}>0.9984</span>,
-  <span style={{color: '#fbbf24'}}>"service"</span>: <span style={{color: '#34d399'}}>"AWS Rekognition Vector Engine"</span>
-&#125;</code></pre>
-                )}
+              {/* Live Metric Stats Bar */}
+              <div style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(56, 189, 248, 0.15) 100%)', border: '1px solid rgba(99, 102, 241, 0.3)', borderRadius: '16px', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.5px' }}>Performance Uptime</div>
+                  <div style={{ color: '#34d399', fontWeight: 800, fontSize: '0.95rem', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <i className="fa-solid fa-bolt"></i> 99.9% Uptime • &lt; 28ms Latency
+                  </div>
+                </div>
+                <button onClick={() => navigateTo('/admin/login')} style={{ background: 'var(--primary-gradient)', border: 'none', color: '#fff', padding: '10px 18px', borderRadius: '12px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 14px rgba(99, 102, 241, 0.4)' }}>
+                  <i className="fa-solid fa-lock"></i> Admin Portal
+                </button>
               </div>
             </div>
           </div>

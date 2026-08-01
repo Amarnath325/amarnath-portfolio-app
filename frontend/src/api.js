@@ -157,6 +157,16 @@ export const deleteExperienceApi = async (id) => {
   }
 };
 
+// Header Navigation Config
+export const saveNavConfigApi = async (navItems) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/admin/nav-config`, { menus: navItems });
+    return response.data;
+  } catch (error) {
+    return { status: false, message: 'Nav save failed' };
+  }
+};
+
 // Fallback Data if backend is starting up
 function getFallbackData() {
   return {

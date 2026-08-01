@@ -13,8 +13,18 @@ import {
   deleteSkillApi,
   fetchAdminExperiences,
   saveExperience,
-  deleteExperienceApi
+  deleteExperienceApi,
+  saveNavConfigApi
 } from './api';
+
+const DEFAULT_NAV_MENUS = [
+  { id: 'about', label: 'About', icon: 'fa-solid fa-user', target: 'about', visible: true, isBtn: false },
+  { id: 'skills', label: 'Skills', icon: 'fa-solid fa-code', target: 'skills', visible: true, isBtn: false },
+  { id: 'experience', label: 'Experience', icon: 'fa-solid fa-briefcase', target: 'experience', visible: true, isBtn: false },
+  { id: 'projects', label: 'Projects', icon: 'fa-solid fa-folder-open', target: 'projects', visible: true, isBtn: false },
+  { id: 'admin', label: 'Admin', icon: 'fa-solid fa-lock', target: '/admin/login', visible: true, isBtn: false },
+  { id: 'contact', label: 'Hire Me', icon: 'fa-solid fa-envelope', target: 'contact', visible: true, isBtn: true }
+];
 
 function App() {
   const [route, setRoute] = useState(window.location.pathname);
@@ -24,6 +34,13 @@ function App() {
   const [scrolled, setScrolled] = useState(false);
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [formStatus, setFormStatus] = useState(null);
+
+  // Header Nav Items Config state (Saved in localStorage & synced with backend)
+  const [navMenus, setNavMenus] = useState(() => {
+    const saved = localStorage.getItem('portfolio_nav_menus');
+    return saved ? JSON.parse(saved) : DEFAULT_NAV_MENUS;
+  });
+  const [navSaveStatus, setNavSaveStatus] = useState('');
 
   // Admin Dashboard State
   const [loginForm, setLoginForm] = useState({ email: 'admin@amarnath.info', password: '' });
@@ -43,7 +60,7 @@ function App() {
 
   // Modal States for Add/Edit
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalType, setModalType] = useState(''); // 'project', 'skill', 'experience'
+  const [modalType, setModalType] = useState(''); 
   const [modalItem, setModalItem] = useState({});
 
   useEffect(() => {
@@ -131,6 +148,25 @@ function App() {
     } else {
       setSaveStatus('error');
     }
+  };
+
+  // Header Nav Config Handlers
+  const toggleNavVisibility = (id) => {
+    const updated = navMenus.map(m => m.id === id ? { ...m, visible: !m.visible } : m);
+    setNavMenus(updated);
+  };
+
+  const updateNavLabel = (id, newLabel) => {
+    const updated = navMenus.map(m => m.id === id ? { ...m, label: newLabel } : m);
+    setNavMenus(updated);
+  };
+
+  const handleSaveNavConfig = async () => {
+    setNavSaveStatus('saving');
+    localStorage.setItem('portfolio_nav_menus', JSON.stringify(navMenus));
+    await saveNavConfigApi(navMenus);
+    setNavSaveStatus('success');
+    setTimeout(() => setNavSaveStatus(''), 3000);
   };
 
   const handleSaveModalItem = async (e) => {
@@ -305,6 +341,7 @@ function App() {
           <nav style={{ flex: 1, padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {[
               { id: 'dashboard', label: 'Overview', icon: 'fa-chart-pie' },
+              { id: 'nav_menus', label: 'Header Navigation', icon: 'fa-bars-staggered' },
               { id: 'profile', label: 'Profile & Bio', icon: 'fa-user-gear' },
               { id: 'projects', label: 'Projects Manager', icon: 'fa-folder-kanban' },
               { id: 'skills', label: 'Skills & Stack', icon: 'fa-code' },
@@ -473,7 +510,84 @@ function App() {
               </div>
             )}
 
-            {/* TAB 2: PERSONAL INFO */}
+            {/* TAB 2: HEADER NAVIGATION MANAGER (NEW!) */}
+            {activeTab === 'nav_menus' && (
+              <div style={{ background: 'rgba(15, 23, 42, 0.85)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '16px', padding: '28px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <div>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#818cf8' }}><i className="fa-solid fa-bars-staggered"></i> Frontend Header Navigation Manager</h3>
+                    <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginTop: '4px' }}>Enable/Disable and rename navigation menu items shown on the frontend website.</p>
+                  </div>
+                  <button 
+                    onClick={handleSaveNavConfig}
+                    style={{ padding: '10px 20px', background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                  >
+                    <i className="fa-solid fa-floppy-disk"></i> {navSaveStatus === 'saving' ? 'Saving...' : 'Save Header Menu Settings'}
+                  </button>
+                </div>
+
+                {navSaveStatus === 'success' && (
+                  <div style={{ color: '#4ade80', padding: '12px', background: 'rgba(34,197,94,0.15)', borderRadius: '10px', marginBottom: '20px', fontSize: '0.9rem' }}>
+                    ✓ Frontend Header Navigation Config updated successfully!
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {navMenus.map((item) => (
+                    <div key={item.id} style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '12px', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1 }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(99, 102, 241, 0.2)', color: '#818cf8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <i className={item.icon}></i>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '4px' }}>MENU LINK TEXT (EDITABLE)</label>
+                          <input 
+                            type="text" 
+                            value={item.label} 
+                            onChange={(e) => updateNavLabel(item.id, e.target.value)}
+                            style={{ padding: '8px 12px', background: '#0f172a', border: '1px solid #475569', borderRadius: '8px', color: '#fff', fontWeight: 600, width: '100%', maxWidth: '240px' }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Status Toggle */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: item.visible ? '#4ade80' : '#f87171' }}>
+                          {item.visible ? 'VISIBLE ON FRONTEND' : 'HIDDEN FROM FRONTEND'}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => toggleNavVisibility(item.id)}
+                          style={{
+                            width: '56px',
+                            height: '30px',
+                            borderRadius: '15px',
+                            background: item.visible ? '#4ade80' : '#475569',
+                            border: 'none',
+                            cursor: 'pointer',
+                            position: 'relative',
+                            transition: 'all 0.3s ease'
+                          }}
+                        >
+                          <span style={{
+                            width: '24px',
+                            height: '24px',
+                            borderRadius: '50%',
+                            background: '#fff',
+                            position: 'absolute',
+                            top: '3px',
+                            left: item.visible ? '29px' : '3px',
+                            transition: 'all 0.3s ease'
+                          }}></span>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* TAB 3: PERSONAL INFO */}
             {activeTab === 'profile' && (
               <div style={{ background: 'rgba(15, 23, 42, 0.85)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '16px', padding: '28px' }}>
                 <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '20px', color: '#818cf8' }}><i className="fa-solid fa-user-pen"></i> Personal Profile & Bio Settings</h3>
@@ -510,7 +624,7 @@ function App() {
               </div>
             )}
 
-            {/* TAB 3: PROJECTS MANAGER */}
+            {/* TAB 4: PROJECTS MANAGER */}
             {activeTab === 'projects' && (
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -543,7 +657,7 @@ function App() {
               </div>
             )}
 
-            {/* TAB 4: SKILLS */}
+            {/* TAB 5: SKILLS */}
             {activeTab === 'skills' && (
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -583,7 +697,7 @@ function App() {
               </div>
             )}
 
-            {/* TAB 5: INQUIRIES INBOX */}
+            {/* TAB 6: INQUIRIES INBOX */}
             {activeTab === 'messages' && (
               <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '16px', padding: '28px' }}>
                 <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '20px', color: '#818cf8' }}><i className="fa-solid fa-inbox"></i> Website Inquiries & Messages</h3>
@@ -605,7 +719,7 @@ function App() {
               </div>
             )}
 
-            {/* TAB 6: SYSTEM HEALTH */}
+            {/* TAB 7: SYSTEM HEALTH */}
             {activeTab === 'system' && (
               <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '16px', padding: '28px' }}>
                 <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '20px', color: '#818cf8' }}><i className="fa-solid fa-server"></i> Full Stack System Health</h3>
@@ -714,19 +828,23 @@ function App() {
       <div className="bg-glow bg-glow-1"></div>
       <div className="bg-glow bg-glow-2"></div>
 
-      {/* Navbar */}
+      {/* Navbar with Dynamic Visibility Filter */}
       <header className={`navbar ${scrolled ? 'scrolled' : ''}`}>
         <div className="container nav-container">
           <a href="#hero" className="logo" onClick={(e) => { e.preventDefault(); scrollTo('hero'); }}>
             <span className="logo-accent">&lt;</span>Amarnath<span className="logo-accent">/&gt;</span>
           </a>
           <nav className="nav-menu">
-            <button className="nav-link" onClick={() => scrollTo('about')}><i className="fa-solid fa-user"></i> About</button>
-            <button className="nav-link" onClick={() => scrollTo('skills')}><i className="fa-solid fa-code"></i> Skills</button>
-            <button className="nav-link" onClick={() => scrollTo('experience')}><i className="fa-solid fa-briefcase"></i> Experience</button>
-            <button className="nav-link" onClick={() => scrollTo('projects')}><i className="fa-solid fa-folder-open"></i> Projects</button>
-            <button className="nav-link" onClick={() => navigateTo('/admin/login')} style={{ color: '#818cf8' }}><i className="fa-solid fa-lock"></i> Admin</button>
-            <button className="nav-link nav-btn" onClick={() => scrollTo('contact')}><i className="fa-solid fa-envelope"></i> Hire Me</button>
+            {navMenus.filter(m => m.visible).map((menu) => (
+              <button 
+                key={menu.id} 
+                className={`nav-link ${menu.isBtn ? 'nav-btn' : ''}`}
+                style={menu.id === 'admin' ? { color: '#818cf8' } : {}}
+                onClick={() => menu.target.startsWith('/') ? navigateTo(menu.target) : scrollTo(menu.target)}
+              >
+                <i className={menu.icon}></i> {menu.label}
+              </button>
+            ))}
           </nav>
         </div>
       </header>

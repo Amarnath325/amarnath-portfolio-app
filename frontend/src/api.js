@@ -1,7 +1,9 @@
 import axios from 'axios';
 
-// Base API Configuration connecting to Laravel Backend
-const API_BASE_URL = 'http://localhost:8000/api';
+// Base API Configuration dynamically connecting to production Render API or local dev
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8000/api'
+  : 'https://amarnath-portfolio-app.onrender.com/api';
 
 export const fetchPortfolioData = async () => {
   try {
@@ -23,6 +25,36 @@ export const sendContactMessage = async (formData) => {
   } catch (error) {
     console.error('Contact submission error:', error);
     throw error;
+  }
+};
+
+export const adminLogin = async (credentials) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/admin/login`, credentials);
+    return response.data;
+  } catch (error) {
+    if (error.response && error.response.data) {
+      return error.response.data;
+    }
+    return { status: false, message: 'Server error or network failure.' };
+  }
+};
+
+export const fetchAdminMessages = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/admin/messages`);
+    return response.data;
+  } catch (error) {
+    return { status: false, data: [] };
+  }
+};
+
+export const updatePersonalInfo = async (data) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/admin/personal`, data);
+    return response.data;
+  } catch (error) {
+    return { status: false, message: 'Update failed' };
   }
 };
 

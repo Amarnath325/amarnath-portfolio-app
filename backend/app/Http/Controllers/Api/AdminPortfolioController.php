@@ -13,6 +13,40 @@ use App\Models\ContactMessage;
 
 class AdminPortfolioController extends Controller
 {
+    /**
+     * Admin Authentication Login Handler
+     */
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        $validEmail = env('ADMIN_EMAIL', 'admin@amarnath.info');
+        $validPassword = env('ADMIN_PASSWORD', 'admin123');
+
+        // Allow main developer email as well
+        if (($request->email === $validEmail || $request->email === 'amarnath24081997@gmail.com') && $request->password === $validPassword) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Credentials validated successfully.',
+                'token' => 'amarnath_admin_token_' . md5(time()),
+                'redirect' => '/admin/dashboard',
+                'user' => [
+                    'name' => 'Amarnath Chauhan',
+                    'email' => $request->email,
+                    'role' => 'Administrator'
+                ]
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Invalid email or password credentials. Please check your details.'
+        ], 401);
+    }
+
     // Update Personal Info
     public function updatePersonalInfo(Request $request)
     {

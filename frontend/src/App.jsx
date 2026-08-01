@@ -1276,24 +1276,46 @@ function App() {
       <div className="bg-glow bg-glow-2"></div>
       <div className="bg-glow bg-glow-3"></div>
 
-      {/* Glassmorphism Navbar */}
+      {/* Floating Capsule Glassmorphism Navbar */}
       <header className={`navbar ${scrolled ? 'scrolled' : ''}`}>
-        <div className="container nav-container">
+        <div className="nav-container">
+          {/* Zone 1: Logo */}
           <a href="#hero" className="logo" onClick={(e) => { e.preventDefault(); scrollTo('hero'); }}>
-            <span className="logo-accent">&lt;</span>Amarnath<span className="logo-accent">/&gt;</span>
+            <div className="logo-icon">
+              <i className="fa-solid fa-code"></i>
+            </div>
+            <span>Amarnath<span style={{ color: 'var(--primary-light)' }}>.info</span></span>
           </a>
+
+          {/* Zone 2: Center Navigation Capsule */}
           <nav className="nav-menu">
-            {navMenus.filter(m => m.visible).map((menu) => (
+            {navMenus.filter(m => m.visible && !m.isBtn && m.id !== 'admin').map((menu) => (
               <button 
                 key={menu.id} 
-                className={`nav-link ${menu.isBtn ? 'nav-btn' : ''}`}
-                style={menu.id === 'admin' ? { color: '#818cf8', background: 'rgba(99, 102, 241, 0.15)', border: '1px solid rgba(99, 102, 241, 0.3)' } : {}}
+                className="nav-link"
                 onClick={() => handleNavClick(menu)}
               >
                 <i className={menu.icon}></i> {menu.label}
               </button>
             ))}
           </nav>
+
+          {/* Zone 3: Right Action Buttons */}
+          <div className="nav-actions">
+            <button 
+              className="nav-btn-admin"
+              onClick={() => navigateTo('/admin/login')}
+            >
+              <i className="fa-solid fa-shield-halved"></i> Admin
+            </button>
+
+            <button 
+              className="nav-btn-cta"
+              onClick={() => scrollTo('contact')}
+            >
+              <i className="fa-solid fa-paper-plane"></i> Hire Me
+            </button>
+          </div>
         </div>
       </header>
 

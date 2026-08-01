@@ -1,5 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { fetchPortfolioData, sendContactMessage, adminLogin, fetchAdminMessages, updatePersonalInfo } from './api';
+import { 
+  fetchPortfolioData, 
+  sendContactMessage, 
+  adminLogin, 
+  fetchAdminMessages, 
+  updatePersonalInfo,
+  fetchAdminProjects,
+  saveProject,
+  deleteProjectApi,
+  fetchAdminSkills,
+  saveSkill,
+  deleteSkillApi,
+  fetchAdminExperiences,
+  saveExperience,
+  deleteExperienceApi
+} from './api';
 
 function App() {
   const [route, setRoute] = useState(window.location.pathname);
@@ -10,15 +25,26 @@ function App() {
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [formStatus, setFormStatus] = useState(null);
 
-  // Admin state
+  // Admin Dashboard State
   const [loginForm, setLoginForm] = useState({ email: 'admin@amarnath.info', password: '' });
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
   const [adminToken, setAdminToken] = useState(localStorage.getItem('admin_token') || '');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [activeTab, setActiveTab] = useState('dashboard');
+  
+  // Dashboard Data States
   const [messages, setMessages] = useState([]);
-  const [adminTab, setAdminTab] = useState('personal');
+  const [projectsList, setProjectsList] = useState([]);
+  const [skillsList, setSkillsList] = useState([]);
+  const [experiencesList, setExperiencesList] = useState([]);
   const [editPersonal, setEditPersonal] = useState({ name: '', title: '', phone: '', email: '', summary: '' });
   const [saveStatus, setSaveStatus] = useState('');
+
+  // Modal States for Add/Edit
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState(''); // 'project', 'skill', 'experience'
+  const [modalItem, setModalItem] = useState({});
 
   useEffect(() => {
     const handlePopState = () => setRoute(window.location.pathname);
@@ -65,11 +91,18 @@ function App() {
     }
   };
 
-  const loadAdminData = async () => {
+  const loadAdminDashboardData = async () => {
     const msgs = await fetchAdminMessages();
-    if (msgs.status) {
-      setMessages(msgs.data);
-    }
+    if (msgs.status) setMessages(msgs.data || []);
+
+    const projs = await fetchAdminProjects();
+    if (projs.status) setProjectsList(projs.data || []);
+
+    const skls = await fetchAdminSkills();
+    if (skls.status) setSkillsList(skls.data || []);
+
+    const exps = await fetchAdminExperiences();
+    if (exps.status) setExperiencesList(exps.data || []);
   };
 
   useEffect(() => {
@@ -77,7 +110,7 @@ function App() {
       if (!adminToken) {
         navigateTo('/admin/login');
       } else {
-        loadAdminData();
+        loadAdminDashboardData();
       }
     }
   }, [route, adminToken]);
@@ -97,6 +130,39 @@ function App() {
       setTimeout(() => setSaveStatus(''), 3000);
     } else {
       setSaveStatus('error');
+    }
+  };
+
+  const handleSaveModalItem = async (e) => {
+    e.preventDefault();
+    if (modalType === 'project') {
+      await saveProject(modalItem);
+      const projs = await fetchAdminProjects();
+      if (projs.status) setProjectsList(projs.data || []);
+    } else if (modalType === 'skill') {
+      await saveSkill(modalItem);
+      const skls = await fetchAdminSkills();
+      if (skls.status) setSkillsList(skls.data || []);
+    } else if (modalType === 'experience') {
+      await saveExperience(modalItem);
+      const exps = await fetchAdminExperiences();
+      if (exps.status) setExperiencesList(exps.data || []);
+    }
+    setModalOpen(false);
+    setModalItem({});
+  };
+
+  const handleDeleteItem = async (type, id) => {
+    if (!window.confirm('Are you sure you want to delete this item?')) return;
+    if (type === 'project') {
+      await deleteProjectApi(id);
+      setProjectsList(projectsList.filter(p => p.id !== id));
+    } else if (type === 'skill') {
+      await deleteSkillApi(id);
+      setSkillsList(skillsList.filter(s => s.id !== id));
+    } else if (type === 'experience') {
+      await deleteExperienceApi(id);
+      setExperiencesList(experiencesList.filter(e => e.id !== id));
     }
   };
 
@@ -134,26 +200,26 @@ function App() {
         <div className="bg-glow bg-glow-1"></div>
         <div className="bg-glow bg-glow-2"></div>
 
-        <div style={{ width: '100%', maxWidth: '440px', padding: '32px', background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '16px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)', zIndex: 10 }}>
-          <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-            <span style={{ fontSize: '2rem', color: '#6366f1', fontWeight: 'bold' }}>&lt;Amarnath/&gt;</span>
-            <h2 style={{ color: '#ffffff', marginTop: '8px', fontSize: '1.5rem', fontWeight: 600 }}>Backend Admin Portal</h2>
-            <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Domain: amarnath.info/admin/login</p>
+        <div style={{ width: '100%', maxWidth: '440px', padding: '36px', background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '20px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', zIndex: 10 }}>
+          <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+            <span style={{ fontSize: '2rem', color: '#6366f1', fontWeight: '800', letterSpacing: '-0.5px' }}>&lt;Amarnath Control/&gt;</span>
+            <h2 style={{ color: '#ffffff', marginTop: '8px', fontSize: '1.4rem', fontWeight: 700 }}>Admin Suite Authentication</h2>
+            <p style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Full Stack Management Portal • amarnath.info</p>
           </div>
 
           {loginError && (
-            <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#f87171', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontSize: '0.875rem', textAlign: 'center' }}>
+            <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#f87171', padding: '12px', borderRadius: '10px', marginBottom: '20px', fontSize: '0.875rem', textAlign: 'center' }}>
               <i className="fa-solid fa-triangle-exclamation" style={{ marginRight: '6px' }}></i> {loginError}
             </div>
           )}
 
           <form onSubmit={handleAdminLoginSubmit}>
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', color: '#cbd5e1', marginBottom: '6px', fontSize: '0.875rem' }}>Admin Email</label>
+            <div style={{ marginBottom: '18px' }}>
+              <label style={{ display: 'block', color: '#cbd5e1', marginBottom: '8px', fontSize: '0.875rem', fontWeight: 500 }}>Admin Email</label>
               <input 
                 type="email" 
                 className="form-input"
-                style={{ width: '100%', padding: '12px', borderRadius: '8px', background: '#1e293b', border: '1px solid #334155', color: '#fff' }}
+                style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', background: '#1e293b', border: '1px solid #334155', color: '#fff', fontSize: '0.95rem' }}
                 value={loginForm.email}
                 onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
                 required 
@@ -161,26 +227,26 @@ function App() {
             </div>
 
             <div style={{ marginBottom: '24px' }}>
-              <label style={{ display: 'block', color: '#cbd5e1', marginBottom: '6px', fontSize: '0.875rem' }}>Password</label>
+              <label style={{ display: 'block', color: '#cbd5e1', marginBottom: '8px', fontSize: '0.875rem', fontWeight: 500 }}>Password</label>
               <input 
                 type="password" 
                 className="form-input"
-                placeholder="Enter admin password (default: admin123)"
-                style={{ width: '100%', padding: '12px', borderRadius: '8px', background: '#1e293b', border: '1px solid #334155', color: '#fff' }}
+                placeholder="Enter password (default: admin123)"
+                style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', background: '#1e293b', border: '1px solid #334155', color: '#fff', fontSize: '0.95rem' }}
                 value={loginForm.password}
                 onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
                 required 
               />
             </div>
 
-            <button type="submit" className="btn btn-primary btn-full" style={{ width: '100%', padding: '14px', borderRadius: '8px', fontSize: '1rem', fontWeight: 600 }} disabled={loginLoading}>
-              {loginLoading ? <><i className="fa-solid fa-circle-notch fa-spin"></i> Validating Credentials...</> : <><i className="fa-solid fa-right-to-bracket"></i> Login to Dashboard</>}
+            <button type="submit" className="btn btn-primary btn-full" style={{ width: '100%', padding: '14px', borderRadius: '10px', fontSize: '1rem', fontWeight: 600, background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', border: 'none', color: '#fff', cursor: 'pointer', boxShadow: '0 4px 14px rgba(99, 102, 241, 0.4)' }} disabled={loginLoading}>
+              {loginLoading ? <><i className="fa-solid fa-circle-notch fa-spin"></i> Authenticating Session...</> : <><i className="fa-solid fa-right-to-bracket"></i> Open Admin Suite</>}
             </button>
           </form>
 
-          <div style={{ marginTop: '20px', textAlign: 'center' }}>
+          <div style={{ marginTop: '24px', textAlign: 'center' }}>
             <button onClick={() => navigateTo('/')} style={{ background: 'none', border: 'none', color: '#818cf8', cursor: 'pointer', fontSize: '0.875rem' }}>
-              &larr; Back to Portfolio Website
+              &larr; Return to Main Portfolio
             </button>
           </div>
         </div>
@@ -189,94 +255,442 @@ function App() {
   }
 
   // ==========================================
-  // ROUTE: Admin Dashboard (https://amarnath.info/admin/dashboard)
+  // ROUTE: Admin Dashboard with Sidebar & Advanced UI (https://amarnath.info/admin/dashboard)
   // ==========================================
   if (route === '/admin/dashboard') {
     return (
-      <div className="portfolio-app" style={{ minHeight: '100vh', background: '#090d16', color: '#fff' }}>
-        <header className="navbar scrolled">
-          <div className="container nav-container" style={{ justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', minHeight: '100vh', background: '#070a12', color: '#f8fafc', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+        
+        {/* Sidebar */}
+        <aside style={{ 
+          width: sidebarCollapsed ? '80px' : '260px', 
+          background: 'rgba(15, 23, 42, 0.95)', 
+          borderRight: '1px solid rgba(255, 255, 255, 0.08)', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          transition: 'all 0.3s ease',
+          position: 'fixed',
+          top: 0,
+          bottom: 0,
+          left: 0,
+          zIndex: 100
+        }}>
+          {/* Sidebar Header */}
+          <div style={{ padding: '20px', display: 'flex', alignItems: 'center', justifyContent: sidebarCollapsed ? 'center' : 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+            {!sidebarCollapsed && <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#6366f1', letterSpacing: '-0.5px' }}>&lt;Amarnath/&gt;</span>}
+            <button 
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#94a3b8', padding: '8px', borderRadius: '8px', cursor: 'pointer' }}
+            >
+              <i className={`fa-solid ${sidebarCollapsed ? 'fa-angles-right' : 'fa-angles-left'}`}></i>
+            </button>
+          </div>
+
+          {/* User Profile Widget */}
+          <div style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem', color: '#fff' }}>
+              AC
+            </div>
+            {!sidebarCollapsed && (
+              <div style={{ overflow: 'hidden' }}>
+                <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#fff', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>Amarnath Chauhan</div>
+                <div style={{ fontSize: '0.75rem', color: '#4ade80', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80' }}></span> Admin Online
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Navigation Items */}
+          <nav style={{ flex: 1, padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            {[
+              { id: 'dashboard', label: 'Overview', icon: 'fa-chart-pie' },
+              { id: 'profile', label: 'Profile & Bio', icon: 'fa-user-gear' },
+              { id: 'projects', label: 'Projects Manager', icon: 'fa-folder-kanban' },
+              { id: 'skills', label: 'Skills & Stack', icon: 'fa-code' },
+              { id: 'experience', label: 'Experiences', icon: 'fa-briefcase' },
+              { id: 'messages', label: 'Inquiries Inbox', icon: 'fa-inbox', badge: messages.length },
+              { id: 'system', label: 'System Health', icon: 'fa-server' }
+            ].map(item => (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  padding: '12px 14px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: activeTab === item.id ? 'linear-gradient(135deg, rgba(99,102,241,0.2) 0%, rgba(168,85,247,0.2) 100%)' : 'transparent',
+                  color: activeTab === item.id ? '#818cf8' : '#94a3b8',
+                  borderLeft: activeTab === item.id ? '3px solid #6366f1' : '3px solid transparent',
+                  fontWeight: activeTab === item.id ? 700 : 500,
+                  fontSize: '0.9rem',
+                  cursor: 'pointer',
+                  justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <i className={`fa-solid ${item.icon}`} style={{ fontSize: '1rem', width: '20px' }}></i>
+                {!sidebarCollapsed && (
+                  <span style={{ flex: 1, textAlign: 'left' }}>{item.label}</span>
+                )}
+                {!sidebarCollapsed && item.badge > 0 && (
+                  <span style={{ background: '#6366f1', color: '#fff', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '10px', fontWeight: 700 }}>
+                    {item.badge}
+                  </span>
+                )}
+              </button>
+            ))}
+          </nav>
+
+          {/* Sidebar Footer Logout */}
+          <div style={{ padding: '16px 12px', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+            <button
+              onClick={handleLogout}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '12px',
+                borderRadius: '10px',
+                border: '1px solid rgba(239, 68, 68, 0.2)',
+                background: 'rgba(239, 68, 68, 0.08)',
+                color: '#f87171',
+                fontWeight: 600,
+                fontSize: '0.875rem',
+                cursor: 'pointer',
+                justifyContent: sidebarCollapsed ? 'center' : 'flex-start'
+              }}
+            >
+              <i className="fa-solid fa-arrow-right-from-bracket"></i>
+              {!sidebarCollapsed && <span>Logout Session</span>}
+            </button>
+          </div>
+        </aside>
+
+        {/* Main Content Area */}
+        <main style={{ 
+          flex: 1, 
+          marginLeft: sidebarCollapsed ? '80px' : '260px', 
+          transition: 'margin 0.3s ease',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '100vh'
+        }}>
+          {/* Header Bar */}
+          <header style={{ 
+            height: '70px', 
+            background: 'rgba(15, 23, 42, 0.8)', 
+            backdropFilter: 'blur(16px)', 
+            borderBottom: '1px solid rgba(255, 255, 255, 0.08)', 
+            padding: '0 28px', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            position: 'sticky',
+            top: 0,
+            zIndex: 90
+          }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <span className="logo-accent" style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>&lt;Amarnath Control Panel/&gt;</span>
-              <span style={{ background: 'rgba(99, 102, 241, 0.2)', color: '#818cf8', padding: '4px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600 }}>amarnath.info</span>
+              <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Admin Control Panel</span>
+              <span style={{ color: '#475569' }}>/</span>
+              <span style={{ color: '#fff', fontWeight: 600, textTransform: 'capitalize' }}>{activeTab}</span>
             </div>
-            <button className="btn btn-secondary" onClick={handleLogout} style={{ padding: '6px 14px', fontSize: '0.85rem' }}>
-              <i className="fa-solid fa-arrow-right-from-bracket"></i> Logout
-            </button>
-          </div>
-        </header>
 
-        <div className="container" style={{ paddingTop: '120px', paddingBottom: '60px' }}>
-          <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', borderBottom: '1px solid #1e293b', pb: '12px' }}>
-            <button 
-              className={`filter-btn ${adminTab === 'personal' ? 'active' : ''}`}
-              onClick={() => setAdminTab('personal')}
-            >
-              <i className="fa-solid fa-user-pen"></i> Personal Info
-            </button>
-            <button 
-              className={`filter-btn ${adminTab === 'messages' ? 'active' : ''}`}
-              onClick={() => setAdminTab('messages')}
-            >
-              <i className="fa-solid fa-inbox"></i> Inquiries Inbox ({messages.length})
-            </button>
-          </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <button 
+                onClick={() => navigateTo('/')}
+                style={{ 
+                  background: 'rgba(99, 102, 241, 0.15)', 
+                  border: '1px solid rgba(99, 102, 241, 0.3)', 
+                  color: '#818cf8', 
+                  padding: '8px 16px', 
+                  borderRadius: '10px', 
+                  fontSize: '0.85rem', 
+                  fontWeight: 600, 
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
+                <i className="fa-solid fa-globe"></i> Visit Website (amarnath.info)
+              </button>
+            </div>
+          </header>
 
-          {adminTab === 'personal' && (
-            <div style={{ background: '#0f172a', padding: '24px', borderRadius: '12px', border: '1px solid #1e293b' }}>
-              <h3 style={{ marginBottom: '16px', color: '#818cf8' }}>Update Dynamic Portfolio Content</h3>
-              {saveStatus === 'success' && <div style={{ color: '#22c55e', padding: '10px', background: 'rgba(34,197,94,0.1)', borderRadius: '8px', marginBottom: '16px' }}>✓ Personal Info updated successfully in Laravel Database!</div>}
-              <form onSubmit={handleSavePersonal}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-                  <div>
-                    <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.85rem', mb: '4px' }}>Full Name</label>
-                    <input type="text" className="form-input" style={{ width: '100%', background: '#1e293b', border: '1px solid #334155', color: '#fff', padding: '10px', borderRadius: '6px' }} value={editPersonal.name || ''} onChange={(e) => setEditPersonal({ ...editPersonal, name: e.target.value })} />
+          {/* Tab Content Container */}
+          <div style={{ padding: '28px', flex: 1 }}>
+
+            {/* TAB 1: OVERVIEW */}
+            {activeTab === 'dashboard' && (
+              <div>
+                <h2 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '24px' }}>System Overview & Quick Stats</h2>
+                
+                {/* Stats Grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '32px' }}>
+                  <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(99, 102, 241, 0.2)', color: '#818cf8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem' }}><i className="fa-solid fa-folder-kanban"></i></div>
+                    <div><div style={{ fontSize: '1.5rem', fontWeight: 800 }}>{projectsList.length || 5}</div><div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Active Projects</div></div>
                   </div>
-                  <div>
-                    <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.85rem', mb: '4px' }}>Professional Title</label>
-                    <input type="text" className="form-input" style={{ width: '100%', background: '#1e293b', border: '1px solid #334155', color: '#fff', padding: '10px', borderRadius: '6px' }} value={editPersonal.title || ''} onChange={(e) => setEditPersonal({ ...editPersonal, title: e.target.value })} />
+
+                  <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(168, 85, 247, 0.2)', color: '#c084fc', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem' }}><i className="fa-solid fa-code"></i></div>
+                    <div><div style={{ fontSize: '1.5rem', fontWeight: 800 }}>{skillsList.length || 12}</div><div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Tech Skills</div></div>
                   </div>
-                  <div>
-                    <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.85rem', mb: '4px' }}>Phone</label>
-                    <input type="text" className="form-input" style={{ width: '100%', background: '#1e293b', border: '1px solid #334155', color: '#fff', padding: '10px', borderRadius: '6px' }} value={editPersonal.phone || ''} onChange={(e) => setEditPersonal({ ...editPersonal, phone: e.target.value })} />
+
+                  <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(34, 197, 94, 0.2)', color: '#4ade80', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem' }}><i className="fa-solid fa-briefcase"></i></div>
+                    <div><div style={{ fontSize: '1.5rem', fontWeight: 800 }}>5+ Yrs</div><div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Experience</div></div>
                   </div>
-                  <div>
-                    <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.85rem', mb: '4px' }}>Email</label>
-                    <input type="email" className="form-input" style={{ width: '100%', background: '#1e293b', border: '1px solid #334155', color: '#fff', padding: '10px', borderRadius: '6px' }} value={editPersonal.email || ''} onChange={(e) => setEditPersonal({ ...editPersonal, email: e.target.value })} />
+
+                  <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(234, 179, 8, 0.2)', color: '#facc15', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem' }}><i className="fa-solid fa-inbox"></i></div>
+                    <div><div style={{ fontSize: '1.5rem', fontWeight: 800 }}>{messages.length}</div><div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Total Inquiries</div></div>
                   </div>
                 </div>
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.85rem', mb: '4px' }}>Bio / Executive Summary</label>
-                  <textarea className="form-input" rows="4" style={{ width: '100%', background: '#1e293b', border: '1px solid #334155', color: '#fff', padding: '10px', borderRadius: '6px' }} value={editPersonal.summary || ''} onChange={(e) => setEditPersonal({ ...editPersonal, summary: e.target.value })}></textarea>
-                </div>
-                <button type="submit" className="btn btn-primary">
-                  {saveStatus === 'saving' ? 'Saving to Database...' : 'Save Changes'}
-                </button>
-              </form>
-            </div>
-          )}
 
-          {adminTab === 'messages' && (
-            <div style={{ background: '#0f172a', padding: '24px', borderRadius: '12px', border: '1px solid #1e293b' }}>
-              <h3 style={{ marginBottom: '16px', color: '#818cf8' }}>Received Website Inquiries</h3>
-              {messages.length === 0 ? (
-                <p style={{ color: '#94a3b8' }}>No inquiries received yet.</p>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {messages.map((m, idx) => (
-                    <div key={idx} style={{ background: '#1e293b', padding: '16px', borderRadius: '8px', border: '1px solid #334155' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                        <span style={{ fontWeight: 600, color: '#f8fafc' }}>{m.name} ({m.email})</span>
-                        <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{new Date(m.created_at || Date.now()).toLocaleDateString()}</span>
+                {/* API Status Cards */}
+                <div style={{ background: 'rgba(15, 23, 42, 0.85)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '16px', padding: '24px', marginBottom: '24px' }}>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '16px', color: '#818cf8' }}><i className="fa-solid fa-network-wired"></i> Connected Services & API Architecture</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <div style={{ background: '#1e293b', padding: '16px', borderRadius: '10px', border: '1px solid #334155' }}>
+                      <div style={{ fontSize: '0.85rem', color: '#94a3b8', marginBottom: '4px' }}>REACT SPA FRONTEND</div>
+                      <div style={{ fontWeight: 700, color: '#fff' }}>https://amarnath.info</div>
+                      <div style={{ fontSize: '0.8rem', color: '#4ade80', marginTop: '6px' }}>🟢 Hosted on Vercel SPA Engine</div>
+                    </div>
+                    <div style={{ background: '#1e293b', padding: '16px', borderRadius: '10px', border: '1px solid #334155' }}>
+                      <div style={{ fontSize: '0.85rem', color: '#94a3b8', marginBottom: '4px' }}>LARAVEL REST BACKEND</div>
+                      <div style={{ fontWeight: 700, color: '#fff' }}>https://admin.amarnath.info</div>
+                      <div style={{ fontSize: '0.8rem', color: '#4ade80', marginTop: '6px' }}>🟢 Containerized Docker on Render</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 2: PERSONAL INFO */}
+            {activeTab === 'profile' && (
+              <div style={{ background: 'rgba(15, 23, 42, 0.85)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '16px', padding: '28px' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '20px', color: '#818cf8' }}><i className="fa-solid fa-user-pen"></i> Personal Profile & Bio Settings</h3>
+                
+                {saveStatus === 'success' && <div style={{ color: '#4ade80', padding: '12px', background: 'rgba(34,197,94,0.15)', borderRadius: '10px', marginBottom: '20px' }}>✓ Personal details updated in Laravel database!</div>}
+                
+                <form onSubmit={handleSavePersonal}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+                    <div>
+                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.875rem', marginBottom: '8px' }}>Full Name</label>
+                      <input type="text" style={{ width: '100%', padding: '12px', background: '#1e293b', border: '1px solid #334155', borderRadius: '10px', color: '#fff' }} value={editPersonal.name || ''} onChange={(e) => setEditPersonal({ ...editPersonal, name: e.target.value })} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.875rem', marginBottom: '8px' }}>Professional Title</label>
+                      <input type="text" style={{ width: '100%', padding: '12px', background: '#1e293b', border: '1px solid #334155', borderRadius: '10px', color: '#fff' }} value={editPersonal.title || ''} onChange={(e) => setEditPersonal({ ...editPersonal, title: e.target.value })} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.875rem', marginBottom: '8px' }}>Contact Phone</label>
+                      <input type="text" style={{ width: '100%', padding: '12px', background: '#1e293b', border: '1px solid #334155', borderRadius: '10px', color: '#fff' }} value={editPersonal.phone || ''} onChange={(e) => setEditPersonal({ ...editPersonal, phone: e.target.value })} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.875rem', marginBottom: '8px' }}>Email Address</label>
+                      <input type="email" style={{ width: '100%', padding: '12px', background: '#1e293b', border: '1px solid #334155', borderRadius: '10px', color: '#fff' }} value={editPersonal.email || ''} onChange={(e) => setEditPersonal({ ...editPersonal, email: e.target.value })} />
+                    </div>
+                  </div>
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.875rem', marginBottom: '8px' }}>Executive Bio & Summary</label>
+                    <textarea rows="4" style={{ width: '100%', padding: '12px', background: '#1e293b', border: '1px solid #334155', borderRadius: '10px', color: '#fff' }} value={editPersonal.summary || ''} onChange={(e) => setEditPersonal({ ...editPersonal, summary: e.target.value })}></textarea>
+                  </div>
+                  <button type="submit" className="btn btn-primary" style={{ padding: '12px 28px', borderRadius: '10px', background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
+                    {saveStatus === 'saving' ? 'Saving to Database...' : 'Save Profile Changes'}
+                  </button>
+                </form>
+              </div>
+            )}
+
+            {/* TAB 3: PROJECTS MANAGER */}
+            {activeTab === 'projects' && (
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#fff' }}>Projects Portfolio Manager</h3>
+                  <button 
+                    onClick={() => { setModalType('project'); setModalItem({ title: '', category: 'enterprise', tag: '', icon: 'fa-layer-group', description: '' }); setModalOpen(true); }}
+                    style={{ padding: '10px 18px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                  >
+                    <i className="fa-solid fa-plus"></i> Add New Project
+                  </button>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+                  {projectsList.map((p) => (
+                    <div key={p.id} style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '14px', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                          <span style={{ background: 'rgba(99, 102, 241, 0.2)', color: '#818cf8', padding: '4px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 700 }}>{p.tag || p.category}</span>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <button onClick={() => { setModalType('project'); setModalItem(p); setModalOpen(true); }} style={{ background: 'none', border: 'none', color: '#cbd5e1', cursor: 'pointer' }}><i className="fa-solid fa-pen"></i></button>
+                            <button onClick={() => handleDeleteItem('project', p.id)} style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer' }}><i className="fa-solid fa-trash"></i></button>
+                          </div>
+                        </div>
+                        <h4 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff', marginBottom: '8px' }}>{p.title}</h4>
+                        <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: '16px' }}>{p.description}</p>
                       </div>
-                      <p style={{ color: '#cbd5e1', fontSize: '0.9rem' }}>{m.message}</p>
                     </div>
                   ))}
                 </div>
-              )}
+              </div>
+            )}
+
+            {/* TAB 4: SKILLS */}
+            {activeTab === 'skills' && (
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#fff' }}>Technical Skillset Manager</h3>
+                  <button 
+                    onClick={() => { setModalType('skill'); setModalItem({ name: '', category: 'backend', icon: 'fa-solid fa-code', is_highlighted: true }); setModalOpen(true); }}
+                    style={{ padding: '10px 18px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                  >
+                    <i className="fa-solid fa-plus"></i> Add New Skill
+                  </button>
+                </div>
+
+                <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '14px', padding: '20px' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', color: '#fff' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid #334155', textAlign: 'left', color: '#94a3b8', fontSize: '0.85rem' }}>
+                        <th style={{ padding: '12px' }}>SKILL NAME</th>
+                        <th style={{ padding: '12px' }}>CATEGORY</th>
+                        <th style={{ padding: '12px' }}>ICON</th>
+                        <th style={{ padding: '12px', textAlign: 'right' }}>ACTIONS</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {skillsList.map((s) => (
+                        <tr key={s.id} style={{ borderBottom: '1px solid #1e293b' }}>
+                          <td style={{ padding: '12px', fontWeight: 600 }}><i className={s.icon} style={{ marginRight: '8px', color: '#818cf8' }}></i> {s.name}</td>
+                          <td style={{ padding: '12px', textTransform: 'capitalize', color: '#94a3b8', fontSize: '0.85rem' }}>{s.category}</td>
+                          <td style={{ padding: '12px', fontFamily: 'monospace', fontSize: '0.8rem', color: '#cbd5e1' }}>{s.icon}</td>
+                          <td style={{ padding: '12px', textAlign: 'right' }}>
+                            <button onClick={() => handleDeleteItem('skill', s.id)} style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer' }}><i className="fa-solid fa-trash"></i> Delete</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 5: INQUIRIES INBOX */}
+            {activeTab === 'messages' && (
+              <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '16px', padding: '28px' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '20px', color: '#818cf8' }}><i className="fa-solid fa-inbox"></i> Website Inquiries & Messages</h3>
+                {messages.length === 0 ? (
+                  <p style={{ color: '#94a3b8' }}>No inquiries received yet.</p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {messages.map((m, idx) => (
+                      <div key={idx} style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '12px', padding: '20px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                          <span style={{ fontWeight: 700, color: '#fff', fontSize: '1rem' }}>{m.name} &lt;{m.email}&gt;</span>
+                          <span style={{ color: '#94a3b8', fontSize: '0.8rem' }}>{new Date(m.created_at || Date.now()).toLocaleString()}</span>
+                        </div>
+                        <p style={{ color: '#cbd5e1', fontSize: '0.925rem', lineHeight: '1.5' }}>{m.message}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* TAB 6: SYSTEM HEALTH */}
+            {activeTab === 'system' && (
+              <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '16px', padding: '28px' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '20px', color: '#818cf8' }}><i className="fa-solid fa-server"></i> Full Stack System Health</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ background: '#1e293b', padding: '16px', borderRadius: '10px', display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Laravel Framework Version</span>
+                    <strong style={{ color: '#4ade80' }}>Laravel 11.55</strong>
+                  </div>
+                  <div style={{ background: '#1e293b', padding: '16px', borderRadius: '10px', display: 'flex', justifyContent: 'space-between' }}>
+                    <span>PHP Runtime Environment</span>
+                    <strong style={{ color: '#4ade80' }}>PHP 8.2.33</strong>
+                  </div>
+                  <div style={{ background: '#1e293b', padding: '16px', borderRadius: '10px', display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Database Engine</span>
+                    <strong style={{ color: '#4ade80' }}>SQLite (Docker Ephemeral Mount)</strong>
+                  </div>
+                  <div style={{ background: '#1e293b', padding: '16px', borderRadius: '10px', display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Frontend Hosting</span>
+                    <strong style={{ color: '#4ade80' }}>Vercel SPA Engine (https://amarnath.info)</strong>
+                  </div>
+                </div>
+              </div>
+            )}
+
+          </div>
+        </main>
+
+        {/* CRUD MODAL POPUP */}
+        {modalOpen && (
+          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+            <div style={{ width: '100%', maxWidth: '500px', background: '#0f172a', border: '1px solid #334155', borderRadius: '20px', padding: '28px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fff', textTransform: 'capitalize' }}>Manage {modalType}</h3>
+                <button onClick={() => setModalOpen(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '1.2rem', cursor: 'pointer' }}>&times;</button>
+              </div>
+
+              <form onSubmit={handleSaveModalItem}>
+                {modalType === 'project' && (
+                  <>
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', mb: '4px' }}>Project Title</label>
+                      <input type="text" style={{ width: '100%', padding: '10px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff' }} value={modalItem.title || ''} onChange={(e) => setModalItem({ ...modalItem, title: e.target.value })} required />
+                    </div>
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', mb: '4px' }}>Tag / Platform</label>
+                      <input type="text" style={{ width: '100%', padding: '10px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff' }} value={modalItem.tag || ''} onChange={(e) => setModalItem({ ...modalItem, tag: e.target.value })} required />
+                    </div>
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', mb: '4px' }}>Description</label>
+                      <textarea rows="3" style={{ width: '100%', padding: '10px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff' }} value={modalItem.description || ''} onChange={(e) => setModalItem({ ...modalItem, description: e.target.value })} required></textarea>
+                    </div>
+                  </>
+                )}
+
+                {modalType === 'skill' && (
+                  <>
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', mb: '4px' }}>Skill Name</label>
+                      <input type="text" style={{ width: '100%', padding: '10px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff' }} value={modalItem.name || ''} onChange={(e) => setModalItem({ ...modalItem, name: e.target.value })} required />
+                    </div>
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', mb: '4px' }}>Category</label>
+                      <select style={{ width: '100%', padding: '10px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff' }} value={modalItem.category || 'backend'} onChange={(e) => setModalItem({ ...modalItem, category: e.target.value })}>
+                        <option value="backend">Backend</option>
+                        <option value="frontend">Frontend</option>
+                        <option value="cloudDb">Cloud & Database</option>
+                        <option value="aiSecurity">AI & Security</option>
+                      </select>
+                    </div>
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', mb: '4px' }}>FontAwesome Icon Class</label>
+                      <input type="text" style={{ width: '100%', padding: '10px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff' }} value={modalItem.icon || 'fa-solid fa-code'} onChange={(e) => setModalItem({ ...modalItem, icon: e.target.value })} required />
+                    </div>
+                  </>
+                )}
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '20px' }}>
+                  <button type="button" onClick={() => setModalOpen(false)} style={{ padding: '10px 18px', background: 'transparent', border: '1px solid #334155', color: '#cbd5e1', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button>
+                  <button type="submit" style={{ padding: '10px 18px', background: '#6366f1', border: 'none', color: '#fff', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>Save Item</button>
+                </div>
+              </form>
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
       </div>
     );
   }

@@ -54,7 +54,7 @@ const DEFAULT_NAV_MENUS = [
     visible: true, 
     isBtn: false 
   },
-  { id: 'admin', label: 'Admin', icon: 'fa-solid fa-lock', type: 'route', target: '/admin/login', blocks: [], visible: true, isBtn: false },
+  { id: 'admin', label: 'Admin Portal', icon: 'fa-solid fa-lock', type: 'route', target: '/admin/login', blocks: [], visible: true, isBtn: false },
   { id: 'contact', label: 'Hire Me', icon: 'fa-solid fa-envelope', type: 'section', target: 'contact', blocks: [], visible: true, isBtn: true }
 ];
 
@@ -64,6 +64,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const [scrolled, setScrolled] = useState(false);
+  const [activeCodeTab, setActiveCodeTab] = useState('api');
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [formStatus, setFormStatus] = useState(null);
 
@@ -154,10 +155,9 @@ function App() {
     if (exps.status && exps.data && exps.data.length > 0) {
       setExperiencesList(exps.data);
     } else {
-      // Default fallback experiences
       setExperiencesList([
-        { id: 1, role: 'Senior Laravel Developer', company: 'Fixingdots Pvt Ltd', period: 'Jan 2025 - Present', points: ['Architecting scalable APIs', 'Attendance engine & AWS Rekognition integration'] },
-        { id: 2, role: 'Full Stack Web Developer', company: 'Enterprise Solutions Inc.', period: '2021 - 2024', points: ['Building Laravel & React applications', 'Database query optimization & Redis caching'] }
+        { id: 1, role: 'Senior Full Stack & API Developer', company: 'Fixingdots Pvt Ltd (FixHR)', period: 'Jan 2025 - Present', points: ['Architecting scalable microservices & attendance engines', 'AWS Rekognition facial biometric AI integration', 'High-speed multi-sheet Excel data parser'] },
+        { id: 2, role: 'Full Stack Web Developer', company: 'Enterprise Digital Solutions', period: '2021 - 2024', points: ['Built decoupled Laravel 11 REST backends & React SPAs', 'Database query optimization, Redis caching & Docker deployments'] }
       ]);
     }
   };
@@ -335,7 +335,6 @@ function App() {
     } else if (menu.type === 'route') {
       navigateTo(menu.target);
     } else {
-      // Same page section scroll
       if (route !== '/') {
         navigateTo('/');
         setTimeout(() => {
@@ -367,11 +366,11 @@ function App() {
   // ==========================================
   if (route === '/admin/login') {
     return (
-      <div className="portfolio-app" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#090d16' }}>
+      <div className="portfolio-app" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#050811' }}>
         <div className="bg-glow bg-glow-1"></div>
         <div className="bg-glow bg-glow-2"></div>
 
-        <div style={{ width: '100%', maxWidth: '440px', padding: '36px', background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '20px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', zIndex: 10 }}>
+        <div style={{ width: '100%', maxWidth: '440px', padding: '36px', background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '24px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', zIndex: 10 }}>
           <div style={{ textAlign: 'center', marginBottom: '28px' }}>
             <span style={{ fontSize: '2rem', color: '#6366f1', fontWeight: '800', letterSpacing: '-0.5px' }}>&lt;Amarnath Control/&gt;</span>
             <h2 style={{ color: '#ffffff', marginTop: '8px', fontSize: '1.4rem', fontWeight: 700 }}>Admin Suite Authentication</h2>
@@ -410,13 +409,13 @@ function App() {
               />
             </div>
 
-            <button type="submit" className="btn btn-primary btn-full" style={{ width: '100%', padding: '14px', borderRadius: '10px', fontSize: '1rem', fontWeight: 600, background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', border: 'none', color: '#fff', cursor: 'pointer', boxShadow: '0 4px 14px rgba(99, 102, 241, 0.4)' }} disabled={loginLoading}>
+            <button type="submit" className="btn btn-primary btn-full" style={{ width: '100%', padding: '14px', borderRadius: '12px', fontSize: '1rem', fontWeight: 700 }} disabled={loginLoading}>
               {loginLoading ? <><i className="fa-solid fa-circle-notch fa-spin"></i> Authenticating Session...</> : <><i className="fa-solid fa-right-to-bracket"></i> Open Admin Suite</>}
             </button>
           </form>
 
           <div style={{ marginTop: '24px', textAlign: 'center' }}>
-            <button onClick={() => navigateTo('/')} style={{ background: 'none', border: 'none', color: '#818cf8', cursor: 'pointer', fontSize: '0.875rem' }}>
+            <button onClick={() => navigateTo('/')} style={{ background: 'none', border: 'none', color: '#818cf8', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 600 }}>
               &larr; Return to Main Portfolio
             </button>
           </div>
@@ -430,7 +429,7 @@ function App() {
   // ==========================================
   if (route === '/admin/dashboard') {
     return (
-      <div style={{ display: 'flex', minHeight: '100vh', background: '#070a12', color: '#f8fafc', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      <div style={{ display: 'flex', minHeight: '100vh', background: '#050811', color: '#f8fafc', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
         
         {/* Sidebar */}
         <aside style={{ 
@@ -765,7 +764,7 @@ function App() {
                     <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.875rem', marginBottom: '8px' }}>Executive Bio & Summary</label>
                     <textarea rows="4" style={{ width: '100%', padding: '12px', background: '#1e293b', border: '1px solid #334155', borderRadius: '10px', color: '#fff' }} value={editPersonal.summary || ''} onChange={(e) => setEditPersonal({ ...editPersonal, summary: e.target.value })}></textarea>
                   </div>
-                  <button type="submit" className="btn btn-primary" style={{ padding: '12px 28px', borderRadius: '10px', background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
+                  <button type="submit" className="btn btn-primary" style={{ padding: '12px 28px', borderRadius: '10px' }}>
                     {saveStatus === 'saving' ? 'Saving to Database...' : 'Save Profile Changes'}
                   </button>
                 </form>
@@ -845,7 +844,7 @@ function App() {
               </div>
             )}
 
-            {/* TAB 6: EXPERIENCES MANAGER (FIXED BLANK PAGE!) */}
+            {/* TAB 6: EXPERIENCES MANAGER */}
             {activeTab === 'experience' && (
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -934,7 +933,7 @@ function App() {
           </div>
         </main>
 
-        {/* WORDPRESS-STYLE VISUAL BLOCK BUILDER MODAL POPUP */}
+        {/* MODAL POPUP */}
         {modalOpen && (
           <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
             <div style={{ width: '100%', maxWidth: '750px', background: '#0f172a', border: '1px solid #334155', borderRadius: '24px', padding: '28px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.6)', maxHeight: '92vh', overflowY: 'auto' }}>
@@ -944,7 +943,6 @@ function App() {
                   <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#fff', textTransform: 'capitalize', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <i className="fa-solid fa-cubes" style={{ color: '#818cf8' }}></i> {modalType === 'nav_menu' ? 'WordPress-Style Visual Block Editor' : `Manage ${modalType}`}
                   </h3>
-                  {modalType === 'nav_menu' && <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginTop: '2px' }}>Add H1/H2/H3 Headings, Text Paragraphs, Image Left + Content Right, and Alert Banners!</p>}
                 </div>
                 <button onClick={() => setModalOpen(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '1.4rem', cursor: 'pointer' }}>&times;</button>
               </div>
@@ -999,14 +997,12 @@ function App() {
                       </div>
                     </div>
 
-                    {/* BLOCK BUILDER CONTROL PANEL */}
                     {modalItem.type === 'route' && (
                       <div style={{ borderTop: '1px solid #334155', paddingTop: '20px', marginBottom: '20px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                           <h4 style={{ color: '#818cf8', fontSize: '1rem', fontWeight: 700 }}><i className="fa-solid fa-square-plus"></i> Add Content Blocks (WordPress Gutenberg Style)</h4>
                         </div>
 
-                        {/* Add Block Toolbar */}
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '20px', background: '#1e293b', padding: '12px', borderRadius: '12px', border: '1px solid #334155' }}>
                           <button type="button" onClick={() => addBlockToMenu('heading')} style={{ padding: '8px 12px', background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', color: '#818cf8', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}><i className="fa-solid fa-heading"></i> + Heading (H1/H2/H3)</button>
                           <button type="button" onClick={() => addBlockToMenu('text')} style={{ padding: '8px 12px', background: 'rgba(168,85,247,0.2)', border: '1px solid rgba(168,85,247,0.4)', color: '#c084fc', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}><i className="fa-solid fa-paragraph"></i> + Text Paragraph</button>
@@ -1015,7 +1011,6 @@ function App() {
                           <button type="button" onClick={() => addBlockToMenu('callout')} style={{ padding: '8px 12px', background: 'rgba(234,179,8,0.2)', border: '1px solid rgba(234,179,8,0.4)', color: '#facc15', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}><i className="fa-solid fa-bullhorn"></i> + Alert Callout</button>
                         </div>
 
-                        {/* LIST OF BLOCKS */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                           {(modalItem.blocks || []).length === 0 ? (
                             <div style={{ textAlign: 'center', padding: '24px', border: '2px dashed #334155', borderRadius: '12px', color: '#94a3b8', fontSize: '0.9rem' }}>
@@ -1035,7 +1030,6 @@ function App() {
                                   </div>
                                 </div>
 
-                                {/* BLOCK INPUT FIELDS */}
                                 {blk.type === 'heading' && (
                                   <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: '12px' }}>
                                     <select value={blk.level} onChange={(e) => updateBlockInMenu(idx, { ...blk, level: e.target.value })} style={{ padding: '8px', background: '#0f172a', border: '1px solid #475569', borderRadius: '8px', color: '#fff' }}>
@@ -1134,7 +1128,7 @@ function App() {
     const blocks = activeCustomMenu.blocks || [];
 
     return (
-      <div className="portfolio-app" style={{ minHeight: '100vh', background: '#090d16', color: '#fff' }}>
+      <div className="portfolio-app" style={{ minHeight: '100vh', background: '#050811', color: '#fff' }}>
         <div className="bg-glow bg-glow-1"></div>
         <div className="bg-glow bg-glow-2"></div>
         
@@ -1159,53 +1153,53 @@ function App() {
         </header>
 
         {/* Dynamic Page Container */}
-        <div className="container" style={{ paddingTop: '120px', paddingBottom: '80px' }}>
+        <div className="container" style={{ paddingTop: '130px', paddingBottom: '90px' }}>
           
           {/* Hero Banner for Dynamic Page */}
-          <div style={{ background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '24px', padding: '36px', marginBottom: '40px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <div style={{ width: '64px', height: '64px', borderRadius: '18px', background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem' }}>
+          <div style={{ background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '24px', padding: '40px', marginBottom: '40px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', gap: '24px' }}>
+            <div style={{ width: '70px', height: '70px', borderRadius: '20px', background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem' }}>
               <i className={activeCustomMenu.icon}></i>
             </div>
             <div>
-              <h1 style={{ fontSize: '2.4rem', fontWeight: 800 }}>{activeCustomMenu.label}</h1>
-              <p style={{ color: '#94a3b8', fontSize: '0.95rem' }}>Dynamic WordPress Block CMS • Route: {activeCustomMenu.target}</p>
+              <h1 style={{ fontSize: '2.6rem', fontWeight: 800 }}>{activeCustomMenu.label}</h1>
+              <p style={{ color: '#94a3b8', fontSize: '1rem', marginTop: '4px' }}>Dynamic WordPress Block CMS • Active Route: <code style={{ color: '#818cf8' }}>{activeCustomMenu.target}</code></p>
             </div>
           </div>
 
           {/* RENDER VISUAL BLOCKS */}
           {blocks.length === 0 ? (
-            <div style={{ background: 'rgba(15, 23, 42, 0.8)', padding: '40px', borderRadius: '20px', border: '1px solid #334155', textAlign: 'center', color: '#cbd5e1' }}>
-              <h3>Welcome to {activeCustomMenu.label}!</h3>
-              <p style={{ marginTop: '8px', color: '#94a3b8' }}>No content blocks added yet. Open Admin Dashboard -&gt; WordPress Block CMS to add Headings, Left Image + Right Text, or Alert Banners!</p>
+            <div style={{ background: 'rgba(15, 23, 42, 0.8)', padding: '50px', borderRadius: '24px', border: '1px solid #334155', textAlign: 'center', color: '#cbd5e1' }}>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Welcome to {activeCustomMenu.label}!</h3>
+              <p style={{ marginTop: '10px', color: '#94a3b8' }}>No content blocks added yet. Open Admin Dashboard -&gt; WordPress Block CMS to add Headings, Left Image + Right Text, or Alert Banners!</p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '36px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
               {blocks.map((blk, idx) => (
                 <div key={blk.id || idx}>
                   
                   {/* HEADING BLOCK */}
                   {blk.type === 'heading' && (
-                    <div style={{ textAlign: blk.align || 'left', margin: '12px 0' }}>
-                      {blk.level === 'h1' && <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: '#fff' }}>{blk.text}</h1>}
-                      {blk.level === 'h2' && <h2 style={{ fontSize: '1.8rem', fontWeight: 700, color: '#818cf8' }}>{blk.text}</h2>}
-                      {blk.level === 'h3' && <h3 style={{ fontSize: '1.4rem', fontWeight: 600, color: '#cbd5e1' }}>{blk.text}</h3>}
+                    <div style={{ textAlign: blk.align || 'left', margin: '16px 0' }}>
+                      {blk.level === 'h1' && <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: '#fff' }}>{blk.text}</h1>}
+                      {blk.level === 'h2' && <h2 style={{ fontSize: '1.9rem', fontWeight: 800, color: '#818cf8' }}>{blk.text}</h2>}
+                      {blk.level === 'h3' && <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#cbd5e1' }}>{blk.text}</h3>}
                     </div>
                   )}
 
                   {/* PARAGRAPH TEXT BLOCK */}
                   {blk.type === 'text' && (
-                    <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#cbd5e1', background: 'rgba(15, 23, 42, 0.5)', padding: '24px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <p style={{ fontSize: '1.125rem', lineHeight: '1.8', color: '#cbd5e1', background: 'rgba(15, 23, 42, 0.6)', padding: '28px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)' }}>
                       {blk.content}
                     </p>
                   )}
 
                   {/* LEFT IMAGE + RIGHT TEXT BLOCK */}
                   {blk.type === 'image_left_text_right' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', alignItems: 'center', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '24px', padding: '32px' }}>
-                      <img src={blk.imageUrl} alt={blk.heading} style={{ width: '100%', height: '280px', objectFit: 'cover', borderRadius: '16px', border: '1px solid #334155' }} />
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '36px', alignItems: 'center', background: 'rgba(15, 23, 42, 0.85)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '28px', padding: '36px' }}>
+                      <img src={blk.imageUrl} alt={blk.heading} style={{ width: '100%', height: '300px', objectFit: 'cover', borderRadius: '20px', border: '1px solid #334155' }} />
                       <div>
-                        <h3 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#fff', marginBottom: '12px' }}>{blk.heading}</h3>
-                        <p style={{ color: '#cbd5e1', fontSize: '1rem', lineHeight: '1.7', marginBottom: '20px' }}>{blk.text}</p>
+                        <h3 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#fff', marginBottom: '14px' }}>{blk.heading}</h3>
+                        <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.7', marginBottom: '24px' }}>{blk.text}</p>
                         {blk.buttonText && (
                           <button onClick={() => scrollTo('contact')} className="btn btn-primary">
                             <i className="fa-solid fa-arrow-right"></i> {blk.buttonText}
@@ -1217,29 +1211,29 @@ function App() {
 
                   {/* LEFT TEXT + RIGHT IMAGE BLOCK */}
                   {blk.type === 'text_left_image_right' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', alignItems: 'center', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '24px', padding: '32px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '36px', alignItems: 'center', background: 'rgba(15, 23, 42, 0.85)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '28px', padding: '36px' }}>
                       <div>
-                        <h3 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#fff', marginBottom: '12px' }}>{blk.heading}</h3>
-                        <p style={{ color: '#cbd5e1', fontSize: '1rem', lineHeight: '1.7', marginBottom: '20px' }}>{blk.text}</p>
+                        <h3 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#fff', marginBottom: '14px' }}>{blk.heading}</h3>
+                        <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.7', marginBottom: '24px' }}>{blk.text}</p>
                         {blk.buttonText && (
                           <button onClick={() => scrollTo('projects')} className="btn btn-secondary">
                             <i className="fa-solid fa-rocket"></i> {blk.buttonText}
                           </button>
                         )}
                       </div>
-                      <img src={blk.imageUrl} alt={blk.heading} style={{ width: '100%', height: '280px', objectFit: 'cover', borderRadius: '16px', border: '1px solid #334155' }} />
+                      <img src={blk.imageUrl} alt={blk.heading} style={{ width: '100%', height: '300px', objectFit: 'cover', borderRadius: '20px', border: '1px solid #334155' }} />
                     </div>
                   )}
 
                   {/* ALERT CALLOUT BLOCK */}
                   {blk.type === 'callout' && (
-                    <div style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(168, 85, 247, 0.2) 100%)', border: '1px solid rgba(99, 102, 241, 0.4)', borderRadius: '20px', padding: '28px', display: 'flex', alignItems: 'center', gap: '20px' }}>
-                      <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: '#6366f1', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>
+                    <div style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(168, 85, 247, 0.2) 100%)', border: '1px solid rgba(99, 102, 241, 0.4)', borderRadius: '24px', padding: '32px', display: 'flex', alignItems: 'center', gap: '24px' }}>
+                      <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: '#6366f1', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', flexShrink: 0 }}>
                         <i className={`fa-solid ${blk.icon || 'fa-circle-info'}`}></i>
                       </div>
                       <div>
-                        <h4 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fff' }}>{blk.title}</h4>
-                        <p style={{ color: '#cbd5e1', fontSize: '0.95rem', marginTop: '4px' }}>{blk.desc}</p>
+                        <h4 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#fff' }}>{blk.title}</h4>
+                        <p style={{ color: '#cbd5e1', fontSize: '1rem', marginTop: '4px' }}>{blk.desc}</p>
                       </div>
                     </div>
                   )}
@@ -1249,7 +1243,7 @@ function App() {
             </div>
           )}
 
-          <div style={{ marginTop: '48px', textAlign: 'center' }}>
+          <div style={{ marginTop: '56px', textAlign: 'center' }}>
             <button onClick={() => navigateTo('/')} className="btn btn-primary">
               <i className="fa-solid fa-house"></i> Return to Main Portfolio
             </button>
@@ -1260,12 +1254,15 @@ function App() {
   }
 
   // ==========================================
-  // ROUTE: Main Portfolio Landing Page (https://amarnath.info/)
+  // ROUTE: Ultra-Professional Main Landing Page (https://amarnath.info/)
   // ==========================================
   if (loading || !data) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', color: '#818cf8', fontSize: '1.5rem', fontFamily: 'sans-serif', background: '#090d16' }}>
-        <i className="fa-solid fa-circle-notch fa-spin" style={{ marginRight: '12px' }}></i> Connecting to Laravel Engine...
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', color: '#818cf8', fontSize: '1.3rem', fontFamily: "'Plus Jakarta Sans', sans-serif", background: '#050811' }}>
+        <div style={{ width: '60px', height: '60px', borderRadius: '50%', border: '4px solid rgba(99, 102, 241, 0.2)', borderTopColor: '#6366f1', animation: 'spin 1s linear infinite', marginBottom: '20px' }}></div>
+        <div style={{ fontWeight: 700, color: '#fff' }}>Loading Enterprise Architecture...</div>
+        <div style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: '6px' }}>Fetching Real-Time State from Laravel 11 REST Engine</div>
+        <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
@@ -1277,8 +1274,9 @@ function App() {
     <div className="portfolio-app">
       <div className="bg-glow bg-glow-1"></div>
       <div className="bg-glow bg-glow-2"></div>
+      <div className="bg-glow bg-glow-3"></div>
 
-      {/* Navbar with Dynamic Header CMS Links */}
+      {/* Glassmorphism Navbar */}
       <header className={`navbar ${scrolled ? 'scrolled' : ''}`}>
         <div className="container nav-container">
           <a href="#hero" className="logo" onClick={(e) => { e.preventDefault(); scrollTo('hero'); }}>
@@ -1289,7 +1287,7 @@ function App() {
               <button 
                 key={menu.id} 
                 className={`nav-link ${menu.isBtn ? 'nav-btn' : ''}`}
-                style={menu.id === 'admin' ? { color: '#818cf8' } : {}}
+                style={menu.id === 'admin' ? { color: '#818cf8', background: 'rgba(99, 102, 241, 0.15)', border: '1px solid rgba(99, 102, 241, 0.3)' } : {}}
                 onClick={() => handleNavClick(menu)}
               >
                 <i className={menu.icon}></i> {menu.label}
@@ -1299,86 +1297,155 @@ function App() {
         </div>
       </header>
 
-      {/* Hero */}
+      {/* Hero Section */}
       <section className="hero" id="hero">
         <div className="container hero-container">
           <div className="hero-content">
             <div className="badge-pill">
-              <span className="pulse-dot"></span> Dynamic Content Powered by Laravel Backend API
+              <span className="pulse-dot"></span> Available for Lead Backend & Full Stack Architect Roles
             </div>
+            
             <h1 className="hero-title">
-              Hi, I'm <span className="gradient-text">{personal.name}</span>
+              Senior Full Stack & <span className="gradient-text">API Architect</span>
             </h1>
-            <h2 className="hero-subtitle">{personal.title}</h2>
-            <p className="hero-description">{personal.summary}</p>
+            <h2 className="hero-subtitle">Building Scalable Enterprise ERP Engines & Biometric AI Systems</h2>
+            
+            <p className="hero-description">
+              5+ years of expertise specializing in high-concurrency Laravel 11 backends, decoupled React SPAs, AWS Rekognition facial biometric integrations, and enterprise database query optimization.
+            </p>
 
+            {/* Quick Tech Pills */}
+            <div className="hero-tech-pills">
+              <span className="tech-pill"><i className="fa-brands fa-laravel"></i> Laravel 11 REST API</span>
+              <span className="tech-pill"><i className="fa-brands fa-react"></i> React 18 SPA</span>
+              <span className="tech-pill"><i className="fa-solid fa-database"></i> MySQL & Redis</span>
+              <span className="tech-pill"><i className="fa-brands fa-docker"></i> Docker & Cloud</span>
+              <span className="tech-pill"><i className="fa-solid fa-face-smile"></i> AWS Rekognition AI</span>
+            </div>
+
+            {/* Hero Key Metrics */}
             <div className="hero-stats">
               <div className="stat-item">
-                <span className="stat-number">{personal.experience_years || 5}+</span>
-                <span className="stat-label">Years Exp.</span>
+                <span className="stat-number">5+ Yrs</span>
+                <span className="stat-label">Production Exp.</span>
               </div>
               <div className="stat-item">
                 <span className="stat-number">10+</span>
                 <span className="stat-label">Enterprise Apps</span>
               </div>
               <div className="stat-item">
-                <span className="stat-number">100%</span>
-                <span className="stat-label">REST API Driven</span>
+                <span className="stat-number">99.9%</span>
+                <span className="stat-label">API Uptime</span>
               </div>
             </div>
 
             <div className="hero-actions">
-              <button className="btn btn-primary" onClick={() => scrollTo('projects')}><i className="fa-solid fa-rocket"></i> Key Projects</button>
+              <button className="btn btn-primary" onClick={() => scrollTo('projects')}><i className="fa-solid fa-rocket"></i> Explore Projects</button>
               <button className="btn btn-secondary" onClick={() => scrollTo('contact')}><i className="fa-solid fa-paper-plane"></i> Contact Me</button>
             </div>
 
             <div className="social-links">
-              <a href={personal.github} target="_blank" rel="noreferrer"><i className="fa-brands fa-github"></i></a>
-              <a href={personal.linkedin} target="_blank" rel="noreferrer"><i className="fa-brands fa-linkedin-in"></i></a>
-              <a href={`mailto:${personal.email}`}><i className="fa-solid fa-envelope"></i></a>
-              <a href={`tel:${personal.phone}`}><i className="fa-solid fa-phone"></i></a>
+              <a href={personal.github} target="_blank" rel="noreferrer" title="GitHub"><i className="fa-brands fa-github"></i></a>
+              <a href={personal.linkedin} target="_blank" rel="noreferrer" title="LinkedIn"><i className="fa-brands fa-linkedin-in"></i></a>
+              <a href={`mailto:${personal.email}`} title="Email"><i className="fa-solid fa-envelope"></i></a>
+              <a href={`tel:${personal.phone}`} title="Phone"><i className="fa-solid fa-phone"></i></a>
             </div>
           </div>
 
+          {/* Interactive Code Mockup Card */}
           <div className="hero-visual">
             <div className="code-card-wrapper">
               <div className="code-card-header">
                 <div className="mac-dots">
                   <span className="dot red"></span><span className="dot yellow"></span><span className="dot green"></span>
                 </div>
-                <span className="card-title">PortfolioApiController.php</span>
+                <span className="card-title">Live Architecture API Console</span>
+                <div className="code-tabs">
+                  <button className={`code-tab ${activeCodeTab === 'api' ? 'active' : ''}`} onClick={() => setActiveCodeTab('api')}>REST API</button>
+                  <button className={`code-tab ${activeCodeTab === 'cms' ? 'active' : ''}`} onClick={() => setActiveCodeTab('cms')}>Gutenberg CMS</button>
+                  <button className={`code-tab ${activeCodeTab === 'ai' ? 'active' : ''}`} onClick={() => setActiveCodeTab('ai')}>Face Biometrics</button>
+                </div>
               </div>
+
               <div className="code-card-body">
-                <pre><code><span style={{color: '#f472b6'}}>GET</span> /api/portfolio
-<span style={{color: '#38bdf8'}}>Response 200 OK</span>
+                {activeCodeTab === 'api' && (
+                  <pre><code><span style={{color: '#f472b6'}}>GET</span> /api/portfolio
+<span style={{color: '#38bdf8'}}>Status 200 OK • 28ms response</span>
 
 &#123;
   <span style={{color: '#fbbf24'}}>"status"</span>: <span style={{color: '#34d399'}}>true</span>,
   <span style={{color: '#fbbf24'}}>"developer"</span>: <span style={{color: '#34d399'}}>"Amarnath Chauhan"</span>,
-  <span style={{color: '#fbbf24'}}>"backend"</span>: <span style={{color: '#34d399'}}>"Laravel 11 REST API"</span>,
-  <span style={{color: '#fbbf24'}}>"frontend"</span>: <span style={{color: '#34d399'}}>"React.js SPA"</span>
+  <span style={{color: '#fbbf24'}}>"stack"</span>: &#123;
+    <span style={{color: '#fbbf24'}}>"backend"</span>: <span style={{color: '#34d399'}}>"Laravel 11 REST API"</span>,
+    <span style={{color: '#fbbf24'}}>"frontend"</span>: <span style={{color: '#34d399'}}>"React 18 SPA Engine"</span>,
+    <span style={{color: '#fbbf24'}}>"database"</span>: <span style={{color: '#34d399'}}>"MySQL & Redis Cache"</span>
+  &#125;
 &#125;</code></pre>
+                )}
+
+                {activeCodeTab === 'cms' && (
+                  <pre><code><span style={{color: '#f472b6'}}>POST</span> /api/admin/nav-config
+<span style={{color: '#38bdf8'}}>Status 201 Created • Dynamic Route Sync</span>
+
+&#123;
+  <span style={{color: '#fbbf24'}}>"route"</span>: <span style={{color: '#34d399'}} font-weight="700">"/services"</span>,
+  <span style={{color: '#fbbf24'}}>"type"</span>: <span style={{color: '#34d399'}}>"gutenberg_block_cms"</span>,
+  <span style={{color: '#fbbf24'}}>"blocks"</span>: [
+    &#123;<span style={{color: '#fbbf24'}}>"type"</span>: <span style={{color: '#34d399'}}>"heading_h1"</span>&#125;,
+    &#123;<span style={{color: '#fbbf24'}}>"type"</span>: <span style={{color: '#34d399'}}>"image_left_text_right"</span>&#125;
+  ]
+&#125;</code></pre>
+                )}
+
+                {activeCodeTab === 'ai' && (
+                  <pre><code><span style={{color: '#f472b6'}}>POST</span> /api/v2/face-attendance
+<span style={{color: '#38bdf8'}}>Status 200 OK • Biometric Verified</span>
+
+&#123;
+  <span style={{color: '#fbbf24'}}>"biometric_status"</span>: <span style={{color: '#34d399'}}>"VERIFIED"</span>,
+  <span style={{color: '#fbbf24'}}>"confidence"</span>: <span style={{color: '#34d399'}}>0.9984</span>,
+  <span style={{color: '#fbbf24'}}>"service"</span>: <span style={{color: '#34d399'}}>"AWS Rekognition Vector Engine"</span>
+&#125;</code></pre>
+                )}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* About */}
+      {/* Strengths & Architecture Highlights */}
       <section className="section" id="about">
         <div className="container">
           <div className="section-header">
-            <span className="section-subtitle">OVERVIEW</span>
-            <h2 className="section-title">About & Core Strengths</h2>
+            <span className="section-subtitle">CORE CAPABILITIES</span>
+            <h2 className="section-title">Enterprise Systems Architecture</h2>
+            <p className="section-desc">Designed to scale under heavy enterprise loads with decoupled API architectures and modern React UI components.</p>
           </div>
+
           <div className="strengths-grid">
-            {strengths && strengths.map((item, i) => (
-              <div key={i} className="strength-card">
-                <div className="strength-icon"><i className={`fa-solid ${item.icon}`}></i></div>
-                <h3>{item.title}</h3>
-                <p>{item.desc}</p>
-              </div>
-            ))}
+            <div className="strength-card">
+              <div className="strength-icon"><i className="fa-solid fa-server"></i></div>
+              <h3>Scalable Microservices & REST API</h3>
+              <p>Designing clean, secure, and documented RESTful APIs in Laravel 11 connected with Redis queue workers and high-speed MySQL queries.</p>
+            </div>
+
+            <div className="strength-card">
+              <div className="strength-icon"><i className="fa-solid fa-face-smile"></i></div>
+              <h3>Biometric AI & Face Recognition</h3>
+              <p>Integrating AWS Rekognition facial comparison vector engines for real-time automated employee attendance and security checks.</p>
+            </div>
+
+            <div className="strength-card">
+              <div className="strength-icon"><i className="fa-solid fa-layer-group"></i></div>
+              <h3>Decoupled React 18 SPA & CMS</h3>
+              <p>Building high-performance single page applications with dynamic Gutenberg/Elementor-style visual block content management systems.</p>
+            </div>
+
+            <div className="strength-card">
+              <div className="strength-icon"><i className="fa-solid fa-file-excel"></i></div>
+              <h3>Enterprise ERP & Attendance Engine</h3>
+              <p>Developed FixHR ERP modules: multi-sheet Excel parsers, automated shift resolvers, overtime calculators, and payroll generators.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -1387,9 +1454,11 @@ function App() {
       <section className="section section-dark" id="skills">
         <div className="container">
           <div className="section-header">
-            <span className="section-subtitle">EXPERTISE</span>
-            <h2 className="section-title">Technical Skillset</h2>
+            <span className="section-subtitle">TECHNICAL EXPERTISE</span>
+            <h2 className="section-title">Technology Stack & Tools</h2>
+            <p className="section-desc">Hand-picked battle-tested technologies for modern web performance and developer productivity.</p>
           </div>
+
           <div className="skills-wrapper">
             {skills && Object.keys(skills).map((catKey) => (
               <div key={catKey} className="skill-category">
@@ -1409,13 +1478,14 @@ function App() {
         </div>
       </section>
 
-      {/* Experience */}
+      {/* Professional Experience */}
       <section className="section" id="experience">
         <div className="container">
           <div className="section-header">
-            <span className="section-subtitle">CAREER</span>
-            <h2 className="section-title">Professional Experience</h2>
+            <span className="section-subtitle">CAREER TRACK RECORD</span>
+            <h2 className="section-title">Professional Work Experience</h2>
           </div>
+
           <div className="timeline">
             {experiences && experiences.map((exp, idx) => (
               <div key={idx} className="timeline-item">
@@ -1426,7 +1496,7 @@ function App() {
                       <h3 className="exp-role">{exp.role}</h3>
                       <h4 className="exp-company">{exp.company}</h4>
                     </div>
-                    <span className="exp-period"><i className="fa-solid fa-calendar"></i> {exp.period}</span>
+                    <span className="exp-period"><i className="fa-solid fa-calendar" style={{ marginRight: '6px' }}></i> {exp.period}</span>
                   </div>
                   <ul className="exp-points">
                     {exp.points && (Array.isArray(exp.points) ? exp.points.map((pt, i) => <li key={i}>{pt}</li>) : <li>{exp.points}</li>)}
@@ -1442,9 +1512,11 @@ function App() {
       <section className="section section-dark" id="projects">
         <div className="container">
           <div className="section-header">
-            <span className="section-subtitle">PORTFOLIO</span>
-            <h2 className="section-title">Key Projects Delivered</h2>
+            <span className="section-subtitle">FEATURED PORTFOLIO</span>
+            <h2 className="section-title">Key Projects & Deliverables</h2>
+            <p className="section-desc">Production systems developed for enterprise HRMS, dynamic content engines, and SaaS platforms.</p>
           </div>
+
           <div className="project-filters">
             {['all', 'enterprise', 'custom', 'cms'].map((cat) => (
               <button key={cat} className={`filter-btn ${filter === cat ? 'active' : ''}`} onClick={() => setFilter(cat)}>
@@ -1452,6 +1524,7 @@ function App() {
               </button>
             ))}
           </div>
+
           <div className="projects-grid">
             {filteredProjects && filteredProjects.map((p) => (
               <div key={p.id} className="project-card">
@@ -1460,8 +1533,10 @@ function App() {
                   <div className="project-icon"><i className={`fa-solid ${p.icon}`}></i></div>
                 </div>
                 <div className="project-body">
-                  <h3 className="project-title">{p.title}</h3>
-                  <p className="project-text">{p.description}</p>
+                  <div>
+                    <h3 className="project-title">{p.title}</h3>
+                    <p className="project-text">{p.description}</p>
+                  </div>
                   <div className="project-tech">
                     {p.tech && p.tech.map((t, i) => <span key={i}>{t}</span>)}
                   </div>
@@ -1476,17 +1551,18 @@ function App() {
       <section className="section">
         <div className="container">
           <div className="section-header">
-            <span className="section-subtitle">EDUCATION</span>
-            <h2 className="section-title">Academic Qualifications</h2>
+            <span className="section-subtitle">ACADEMIC BACKGROUND</span>
+            <h2 className="section-title">Qualifications & Education</h2>
           </div>
+
           <div className="edu-grid">
             {education && education.map((edu, i) => (
               <div key={i} className="edu-card">
                 <div className="edu-icon"><i className={`fa-solid ${edu.icon}`}></i></div>
                 <div>
                   <h3>{edu.degree}</h3>
-                  <p>{edu.school}</p>
-                  <span style={{ color: '#818cf8', fontWeight: 600 }}>{edu.year}</span>
+                  <p style={{ color: '#94a3b8', marginTop: '4px' }}>{edu.school}</p>
+                  <span style={{ color: '#818cf8', fontWeight: 700, fontSize: '0.85rem', marginTop: '6px', display: 'inline-block' }}>{edu.year}</span>
                 </div>
               </div>
             ))}
@@ -1494,44 +1570,55 @@ function App() {
         </div>
       </section>
 
-      {/* Contact */}
+      {/* Contact Section */}
       <section className="section section-dark" id="contact">
         <div className="container">
           <div className="contact-box">
             <div className="contact-info">
-              <span className="section-subtitle">CONTACT</span>
-              <h2 className="contact-title">Let's Connect!</h2>
-              <p className="contact-desc">Open for Senior Backend / Full Stack opportunities, freelance consulting, or architecture reviews.</p>
+              <span className="section-subtitle">GET IN TOUCH</span>
+              <h2 className="contact-title">Let's Build Something Exceptional</h2>
+              <p className="contact-desc">Available for Senior Full Stack Engineer / Lead Architect positions, system performance optimization, or tech consulting.</p>
+              
               <div className="contact-details">
                 <div className="contact-item">
                   <div className="c-icon"><i className="fa-solid fa-envelope"></i></div>
-                  <div><span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>EMAIL</span><br/><a href={`mailto:${personal.email}`} className="c-value">{personal.email}</a></div>
+                  <div>
+                    <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 700, letterSpacing: '1px' }}>EMAIL ADDRESS</span><br/>
+                    <a href={`mailto:${personal.email}`} className="c-value">{personal.email}</a>
+                  </div>
                 </div>
+
                 <div className="contact-item">
                   <div className="c-icon"><i className="fa-solid fa-phone"></i></div>
-                  <div><span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>PHONE</span><br/><a href={`tel:${personal.phone}`} className="c-value">{personal.phone}</a></div>
+                  <div>
+                    <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 700, letterSpacing: '1px' }}>PHONE NUMBER</span><br/>
+                    <a href={`tel:${personal.phone}`} className="c-value">{personal.phone}</a>
+                  </div>
                 </div>
               </div>
             </div>
 
             <form className="contact-form" onSubmit={handleContactSubmit}>
-              <h3>Send Inquiry to Laravel API</h3>
-              {formStatus === 'success' && <div style={{ color: '#22c55e', padding: '10px', background: 'rgba(34,197,94,0.1)', borderRadius: '8px' }}>✓ Inquiry saved to Laravel Database!</div>}
-              {formStatus === 'error' && <div style={{ color: '#ef4444', padding: '10px', background: 'rgba(239,68,68,0.1)', borderRadius: '8px' }}>✕ Error saving to backend.</div>}
-              <input type="text" className="form-input" placeholder="Your Name" value={contactForm.name} onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })} required />
-              <input type="email" className="form-input" placeholder="Your Email" value={contactForm.email} onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })} required />
-              <textarea className="form-input" rows="4" placeholder="Your Message..." value={contactForm.message} onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })} required></textarea>
+              <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#fff' }}>Send Inquiry to Laravel API</h3>
+              {formStatus === 'success' && <div style={{ color: '#22c55e', padding: '12px', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: '10px', fontSize: '0.9rem' }}>✓ Inquiry saved to Laravel Database!</div>}
+              {formStatus === 'error' && <div style={{ color: '#ef4444', padding: '12px', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '10px', fontSize: '0.9rem' }}>✕ Error saving to backend.</div>}
+              
+              <input type="text" className="form-input" placeholder="Your Full Name" value={contactForm.name} onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })} required />
+              <input type="email" className="form-input" placeholder="Your Email Address" value={contactForm.email} onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })} required />
+              <textarea className="form-input" rows="4" placeholder="How can I help you? Project details or role opportunities..." value={contactForm.message} onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })} required></textarea>
+              
               <button type="submit" className="btn btn-primary btn-full">
-                {formStatus === 'sending' ? 'Saving to Laravel...' : 'Submit Inquiry'}
+                {formStatus === 'sending' ? <><i className="fa-solid fa-circle-notch fa-spin"></i> Saving to Backend...</> : <><i className="fa-solid fa-paper-plane"></i> Send Direct Inquiry</>}
               </button>
             </form>
           </div>
         </div>
       </section>
 
+      {/* Footer */}
       <footer className="footer">
         <div className="container footer-container">
-          <p>&copy; {new Date().getFullYear()} {personal.name}. Powered by Laravel & React.</p>
+          <p>&copy; {new Date().getFullYear()} {personal.name}. Powered by Laravel 11 & React 18.</p>
           <div className="footer-links">
             <a href={personal.github} target="_blank" rel="noreferrer">GitHub</a>
             <a href={personal.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>

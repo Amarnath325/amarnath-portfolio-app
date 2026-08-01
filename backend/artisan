@@ -3,18 +3,24 @@
 
 define('LARAVEL_START', microtime(true));
 
-// Register the Composer Autoloader...
+// Register Autoloader
 if (file_exists(__DIR__.'/vendor/autoload.php')) {
     require __DIR__.'/vendor/autoload.php';
 } elseif (file_exists(__DIR__.'/../vendor/autoload.php')) {
     require __DIR__.'/../vendor/autoload.php';
 }
 
-// Bootstrap Laravel and handle the command...
+// Bootstrap Laravel Application
+$app = null;
 if (file_exists(__DIR__.'/bootstrap/app.php')) {
-    $app = require_once __DIR__.'/bootstrap/app.php';
+    $app = require __DIR__.'/bootstrap/app.php';
 } elseif (file_exists(__DIR__.'/../bootstrap/app.php')) {
-    $app = require_once __DIR__.'/../bootstrap/app.php';
+    $app = require __DIR__.'/../bootstrap/app.php';
+}
+
+if (!$app) {
+    echo "Failed to load Laravel bootstrap application.\n";
+    exit(1);
 }
 
 $status = $app->handleCommand(new Symfony\Component\Console\Input\ArgvInput);

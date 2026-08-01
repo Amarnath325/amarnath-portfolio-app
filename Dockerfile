@@ -7,6 +7,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
+RUN echo "Rebuild timestamp: 20260801_1620"
+
 COPY . .
 
 RUN if [ -d "backend" ]; then cp -a backend/. /app/ ; fi

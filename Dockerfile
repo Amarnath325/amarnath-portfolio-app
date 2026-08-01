@@ -15,7 +15,7 @@ RUN mkdir -p public bootstrap/cache storage/framework/views storage/framework/se
 RUN touch database/database.sqlite
 RUN chmod -R 777 bootstrap/cache storage database
 
-RUN echo "APP_NAME=Laravel\nAPP_ENV=production\nAPP_KEY=base64:d3pZNWxWOGdYMXhRMnFWWjNlUjV0WTd1Tzh4Vzl6WTA=\nAPP_DEBUG=true\nAPP_URL=http://localhost\nDB_CONNECTION=sqlite\nDB_DATABASE=/app/database/database.sqlite" > .env
+RUN echo "APP_NAME=Laravel\nAPP_ENV=production\nAPP_KEY=base64:d3pZNWxWOGdYMXhRMnFWWjNlUjV0WTd1Tzh4Vzl6WTA=\nAPP_DEBUG=true\nAPP_URL=http://localhost\nDB_CONNECTION=sqlite\nDB_DATABASE=/app/database/database.sqlite\nSESSION_DRIVER=file\nCACHE_STORE=file" > .env
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 

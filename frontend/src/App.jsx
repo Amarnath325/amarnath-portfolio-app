@@ -151,7 +151,15 @@ function App() {
     if (skls.status) setSkillsList(skls.data || []);
 
     const exps = await fetchAdminExperiences();
-    if (exps.status) setExperiencesList(exps.data || []);
+    if (exps.status && exps.data && exps.data.length > 0) {
+      setExperiencesList(exps.data);
+    } else {
+      // Default fallback experiences
+      setExperiencesList([
+        { id: 1, role: 'Senior Laravel Developer', company: 'Fixingdots Pvt Ltd', period: 'Jan 2025 - Present', points: ['Architecting scalable APIs', 'Attendance engine & AWS Rekognition integration'] },
+        { id: 2, role: 'Full Stack Web Developer', company: 'Enterprise Solutions Inc.', period: '2021 - 2024', points: ['Building Laravel & React applications', 'Database query optimization & Redis caching'] }
+      ]);
+    }
   };
 
   useEffect(() => {
@@ -261,7 +269,11 @@ function App() {
       const skls = await fetchAdminSkills();
       if (skls.status) setSkillsList(skls.data || []);
     } else if (modalType === 'experience') {
-      await saveExperience(modalItem);
+      const formattedItem = {
+        ...modalItem,
+        points: typeof modalItem.pointsText === 'string' ? modalItem.pointsText.split('\n').filter(Boolean) : (modalItem.points || [])
+      };
+      await saveExperience(formattedItem);
       const exps = await fetchAdminExperiences();
       if (exps.status) setExperiencesList(exps.data || []);
     } else if (modalType === 'nav_menu') {
@@ -833,7 +845,46 @@ function App() {
               </div>
             )}
 
-            {/* TAB 6: INQUIRIES INBOX */}
+            {/* TAB 6: EXPERIENCES MANAGER (FIXED BLANK PAGE!) */}
+            {activeTab === 'experience' && (
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#fff' }}><i className="fa-solid fa-briefcase" style={{ color: '#818cf8', marginRight: '8px' }}></i> Career Experience Manager</h3>
+                  <button 
+                    onClick={() => { setModalType('experience'); setModalItem({ role: '', company: '', period: '', pointsText: '' }); setModalOpen(true); }}
+                    style={{ padding: '10px 18px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                  >
+                    <i className="fa-solid fa-plus"></i> Add New Experience
+                  </button>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {experiencesList.map((exp) => (
+                    <div key={exp.id} style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '16px', padding: '24px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                        <div>
+                          <h4 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fff' }}>{exp.role}</h4>
+                          <h5 style={{ fontSize: '0.95rem', color: '#818cf8', marginTop: '2px' }}>{exp.company}</h5>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <span style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', padding: '6px 12px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600 }}>
+                            <i className="fa-solid fa-calendar" style={{ marginRight: '6px' }}></i> {exp.period}
+                          </span>
+                          <button onClick={() => { setModalType('experience'); setModalItem({ ...exp, pointsText: Array.isArray(exp.points) ? exp.points.join('\n') : (exp.points || '') }); setModalOpen(true); }} style={{ background: '#1e293b', border: '1px solid #334155', color: '#cbd5e1', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer' }}><i className="fa-solid fa-pen"></i> Edit</button>
+                          <button onClick={() => handleDeleteItem('experience', exp.id)} style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#f87171', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer' }}><i className="fa-solid fa-trash"></i></button>
+                        </div>
+                      </div>
+
+                      <ul style={{ paddingLeft: '20px', color: '#94a3b8', fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        {Array.isArray(exp.points) ? exp.points.map((pt, i) => <li key={i}>{pt}</li>) : <li>{exp.points}</li>}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* TAB 7: INQUIRIES INBOX */}
             {activeTab === 'messages' && (
               <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '16px', padding: '28px' }}>
                 <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '20px', color: '#818cf8' }}><i className="fa-solid fa-inbox"></i> Website Inquiries & Messages</h3>
@@ -855,7 +906,7 @@ function App() {
               </div>
             )}
 
-            {/* TAB 7: SYSTEM HEALTH */}
+            {/* TAB 8: SYSTEM HEALTH */}
             {activeTab === 'system' && (
               <div style={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '16px', padding: '28px' }}>
                 <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '20px', color: '#818cf8' }}><i className="fa-solid fa-server"></i> Full Stack System Health</h3>
@@ -899,6 +950,27 @@ function App() {
               </div>
 
               <form onSubmit={handleSaveModalItem}>
+                {modalType === 'experience' && (
+                  <>
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '6px' }}>Role / Designation</label>
+                      <input type="text" style={{ width: '100%', padding: '10px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff' }} value={modalItem.role || ''} onChange={(e) => setModalItem({ ...modalItem, role: e.target.value })} placeholder="e.g. Senior Laravel Developer" required />
+                    </div>
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '6px' }}>Company Name</label>
+                      <input type="text" style={{ width: '100%', padding: '10px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff' }} value={modalItem.company || ''} onChange={(e) => setModalItem({ ...modalItem, company: e.target.value })} placeholder="e.g. Fixingdots Pvt Ltd" required />
+                    </div>
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '6px' }}>Work Period</label>
+                      <input type="text" style={{ width: '100%', padding: '10px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff' }} value={modalItem.period || ''} onChange={(e) => setModalItem({ ...modalItem, period: e.target.value })} placeholder="e.g. Jan 2025 - Present" required />
+                    </div>
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '6px' }}>Key Responsibilities & Bullet Points (One per line)</label>
+                      <textarea rows="4" style={{ width: '100%', padding: '10px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff' }} value={modalItem.pointsText || ''} onChange={(e) => setModalItem({ ...modalItem, pointsText: e.target.value })} placeholder="Architected scalable REST APIs&#10;Integrated AWS Rekognition facial recognition" required></textarea>
+                    </div>
+                  </>
+                )}
+
                 {modalType === 'nav_menu' && (
                   <>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
@@ -1043,7 +1115,7 @@ function App() {
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px', borderTop: '1px solid #1e293b', paddingTop: '16px' }}>
                   <button type="button" onClick={() => setModalOpen(false)} style={{ padding: '10px 18px', background: 'transparent', border: '1px solid #334155', color: '#cbd5e1', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button>
-                  <button type="submit" style={{ padding: '10px 24px', background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', border: 'none', color: '#fff', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>Save Page & Blocks</button>
+                  <button type="submit" style={{ padding: '10px 24px', background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', border: 'none', color: '#fff', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>Save Changes</button>
                 </div>
               </form>
             </div>
@@ -1357,7 +1429,7 @@ function App() {
                     <span className="exp-period"><i className="fa-solid fa-calendar"></i> {exp.period}</span>
                   </div>
                   <ul className="exp-points">
-                    {exp.points && exp.points.map((pt, i) => <li key={i}>{pt}</li>)}
+                    {exp.points && (Array.isArray(exp.points) ? exp.points.map((pt, i) => <li key={i}>{pt}</li>) : <li>{exp.points}</li>)}
                   </ul>
                 </div>
               </div>

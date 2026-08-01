@@ -38,6 +38,9 @@ Route::prefix('admin')->group(function () {
     // Update Personal Info
     Route::post('/personal', [AdminPortfolioController::class, 'updatePersonalInfo']);
     
+    // Header Nav Config Route
+    Route::post('/nav-config', [AdminPortfolioController::class, 'saveNavConfig']);
+
     // Strengths Management
     Route::get('/strengths', [AdminPortfolioController::class, 'listStrengths']);
     Route::post('/strengths', [AdminPortfolioController::class, 'storeStrength']);

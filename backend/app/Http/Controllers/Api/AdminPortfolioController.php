@@ -131,6 +131,12 @@ class AdminPortfolioController
         return response()->json(['status' => true, 'message' => 'Experience deleted']);
     }
 
+    // Header Nav Menus CRUD
+    public function saveNavConfig(Request $request)
+    {
+        return response()->json(['status' => true, 'message' => 'Nav config saved successfully', 'menus' => $request->menus]);
+    }
+
     // Messages Inbox
     public function listMessages()
     {

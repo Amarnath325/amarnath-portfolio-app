@@ -18,12 +18,12 @@ import {
 } from './api';
 
 const DEFAULT_NAV_MENUS = [
-  { id: 'about', label: 'About', icon: 'fa-solid fa-user', target: 'about', visible: true, isBtn: false },
-  { id: 'skills', label: 'Skills', icon: 'fa-solid fa-code', target: 'skills', visible: true, isBtn: false },
-  { id: 'experience', label: 'Experience', icon: 'fa-solid fa-briefcase', target: 'experience', visible: true, isBtn: false },
-  { id: 'projects', label: 'Projects', icon: 'fa-solid fa-folder-open', target: 'projects', visible: true, isBtn: false },
-  { id: 'admin', label: 'Admin', icon: 'fa-solid fa-lock', target: '/admin/login', visible: true, isBtn: false },
-  { id: 'contact', label: 'Hire Me', icon: 'fa-solid fa-envelope', target: 'contact', visible: true, isBtn: true }
+  { id: 'about', label: 'About', icon: 'fa-solid fa-user', type: 'section', target: 'about', page_content: '', visible: true, isBtn: false },
+  { id: 'skills', label: 'Skills', icon: 'fa-solid fa-code', type: 'section', target: 'skills', page_content: '', visible: true, isBtn: false },
+  { id: 'experience', label: 'Experience', icon: 'fa-solid fa-briefcase', type: 'section', target: 'experience', page_content: '', visible: true, isBtn: false },
+  { id: 'projects', label: 'Projects', icon: 'fa-solid fa-folder-open', type: 'section', target: 'projects', page_content: '', visible: true, isBtn: false },
+  { id: 'admin', label: 'Admin', icon: 'fa-solid fa-lock', type: 'route', target: '/admin/login', page_content: '', visible: true, isBtn: false },
+  { id: 'contact', label: 'Hire Me', icon: 'fa-solid fa-envelope', type: 'section', target: 'contact', page_content: '', visible: true, isBtn: true }
 ];
 
 function App() {
@@ -58,9 +58,9 @@ function App() {
   const [editPersonal, setEditPersonal] = useState({ name: '', title: '', phone: '', email: '', summary: '' });
   const [saveStatus, setSaveStatus] = useState('');
 
-  // Modal States for Add/Edit
+  // Modal States for Add/Edit CRUD
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalType, setModalType] = useState(''); 
+  const [modalType, setModalType] = useState(''); // 'project', 'skill', 'experience', 'nav_menu'
   const [modalItem, setModalItem] = useState({});
 
   useEffect(() => {
@@ -154,11 +154,7 @@ function App() {
   const toggleNavVisibility = (id) => {
     const updated = navMenus.map(m => m.id === id ? { ...m, visible: !m.visible } : m);
     setNavMenus(updated);
-  };
-
-  const updateNavLabel = (id, newLabel) => {
-    const updated = navMenus.map(m => m.id === id ? { ...m, label: newLabel } : m);
-    setNavMenus(updated);
+    localStorage.setItem('portfolio_nav_menus', JSON.stringify(updated));
   };
 
   const handleSaveNavConfig = async () => {
@@ -183,6 +179,22 @@ function App() {
       await saveExperience(modalItem);
       const exps = await fetchAdminExperiences();
       if (exps.status) setExperiencesList(exps.data || []);
+    } else if (modalType === 'nav_menu') {
+      let updated;
+      if (modalItem.id) {
+        updated = navMenus.map(m => m.id === modalItem.id ? modalItem : m);
+      } else {
+        const newItem = { 
+          ...modalItem, 
+          id: 'custom_' + Date.now(), 
+          visible: true,
+          type: modalItem.type || 'section'
+        };
+        updated = [...navMenus, newItem];
+      }
+      setNavMenus(updated);
+      localStorage.setItem('portfolio_nav_menus', JSON.stringify(updated));
+      await saveNavConfigApi(updated);
     }
     setModalOpen(false);
     setModalItem({});
@@ -199,6 +211,11 @@ function App() {
     } else if (type === 'experience') {
       await deleteExperienceApi(id);
       setExperiencesList(experiencesList.filter(e => e.id !== id));
+    } else if (type === 'nav_menu') {
+      const updated = navMenus.filter(m => m.id !== id);
+      setNavMenus(updated);
+      localStorage.setItem('portfolio_nav_menus', JSON.stringify(updated));
+      await saveNavConfigApi(updated);
     }
   };
 
@@ -211,6 +228,26 @@ function App() {
       setContactForm({ name: '', email: '', message: '' });
     } catch (err) {
       setFormStatus('error');
+    }
+  };
+
+  const handleNavClick = (menu) => {
+    if (menu.type === 'external') {
+      window.open(menu.target, '_blank');
+    } else if (menu.type === 'route') {
+      navigateTo(menu.target);
+    } else {
+      // Same page section scroll
+      if (route !== '/') {
+        navigateTo('/');
+        setTimeout(() => {
+          const el = document.getElementById(menu.target);
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+      } else {
+        const el = document.getElementById(menu.target);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   };
 
@@ -341,7 +378,7 @@ function App() {
           <nav style={{ flex: 1, padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {[
               { id: 'dashboard', label: 'Overview', icon: 'fa-chart-pie' },
-              { id: 'nav_menus', label: 'Header Navigation', icon: 'fa-bars-staggered' },
+              { id: 'nav_menus', label: 'Header Navigation CMS', icon: 'fa-bars-staggered' },
               { id: 'profile', label: 'Profile & Bio', icon: 'fa-user-gear' },
               { id: 'projects', label: 'Projects Manager', icon: 'fa-folder-kanban' },
               { id: 'skills', label: 'Skills & Stack', icon: 'fa-code' },
@@ -481,8 +518,8 @@ function App() {
                   </div>
 
                   <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(34, 197, 94, 0.2)', color: '#4ade80', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem' }}><i className="fa-solid fa-briefcase"></i></div>
-                    <div><div style={{ fontSize: '1.5rem', fontWeight: 800 }}>5+ Yrs</div><div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Experience</div></div>
+                    <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(34, 197, 94, 0.2)', color: '#4ade80', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem' }}><i className="fa-solid fa-bars-staggered"></i></div>
+                    <div><div style={{ fontSize: '1.5rem', fontWeight: 800 }}>{navMenus.length}</div><div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Header Menus</div></div>
                   </div>
 
                   <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '16px', padding: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -510,20 +547,28 @@ function App() {
               </div>
             )}
 
-            {/* TAB 2: HEADER NAVIGATION MANAGER (NEW!) */}
+            {/* TAB 2: HEADER NAVIGATION FULL CRUD CMS MANAGER */}
             {activeTab === 'nav_menus' && (
               <div style={{ background: 'rgba(15, 23, 42, 0.85)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '16px', padding: '28px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                   <div>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#818cf8' }}><i className="fa-solid fa-bars-staggered"></i> Frontend Header Navigation Manager</h3>
-                    <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginTop: '4px' }}>Enable/Disable and rename navigation menu items shown on the frontend website.</p>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#818cf8' }}><i className="fa-solid fa-bars-staggered"></i> Frontend Header Navigation CMS (FULL CRUD)</h3>
+                    <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginTop: '4px' }}>Create custom menus, set target (Same Page Section vs New Page Route vs External URL), and edit dynamic page content!</p>
                   </div>
-                  <button 
-                    onClick={handleSaveNavConfig}
-                    style={{ padding: '10px 20px', background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
-                  >
-                    <i className="fa-solid fa-floppy-disk"></i> {navSaveStatus === 'saving' ? 'Saving...' : 'Save Header Menu Settings'}
-                  </button>
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    <button 
+                      onClick={() => { setModalType('nav_menu'); setModalItem({ label: '', icon: 'fa-solid fa-link', type: 'section', target: 'about', page_content: '', visible: true, isBtn: false }); setModalOpen(true); }}
+                      style={{ padding: '10px 18px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                    >
+                      <i className="fa-solid fa-plus"></i> Add New Header Menu
+                    </button>
+                    <button 
+                      onClick={handleSaveNavConfig}
+                      style={{ padding: '10px 20px', background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                    >
+                      <i className="fa-solid fa-floppy-disk"></i> {navSaveStatus === 'saving' ? 'Saving...' : 'Save Settings'}
+                    </button>
+                  </div>
                 </div>
 
                 {navSaveStatus === 'success' && (
@@ -534,27 +579,32 @@ function App() {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   {navMenus.map((item) => (
-                    <div key={item.id} style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '12px', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px' }}>
+                    <div key={item.id} style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '12px', padding: '18px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1 }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(99, 102, 241, 0.2)', color: '#818cf8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(99, 102, 241, 0.2)', color: '#818cf8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
                           <i className={item.icon}></i>
                         </div>
-                        <div style={{ flex: 1 }}>
-                          <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '4px' }}>MENU LINK TEXT (EDITABLE)</label>
-                          <input 
-                            type="text" 
-                            value={item.label} 
-                            onChange={(e) => updateNavLabel(item.id, e.target.value)}
-                            style={{ padding: '8px 12px', background: '#0f172a', border: '1px solid #475569', borderRadius: '8px', color: '#fff', fontWeight: 600, width: '100%', maxWidth: '240px' }}
-                          />
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: '1rem', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {item.label}
+                            <span style={{ fontSize: '0.75rem', background: item.type === 'route' ? 'rgba(168,85,247,0.2)' : item.type === 'external' ? 'rgba(234,179,8,0.2)' : 'rgba(99,102,241,0.2)', color: item.type === 'route' ? '#c084fc' : item.type === 'external' ? '#facc15' : '#818cf8', padding: '2px 8px', borderRadius: '6px', fontWeight: 600 }}>
+                              {item.type === 'route' ? '📍 NEW PAGE ROUTE' : item.type === 'external' ? '🔗 EXTERNAL URL' : '📜 SAME PAGE SCROLL'}
+                            </span>
+                          </div>
+                          <div style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: '2px' }}>
+                            Target: <code style={{ color: '#818cf8' }}>{item.target}</code>
+                          </div>
                         </div>
                       </div>
 
-                      {/* Status Toggle */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: item.visible ? '#4ade80' : '#f87171' }}>
-                          {item.visible ? 'VISIBLE ON FRONTEND' : 'HIDDEN FROM FRONTEND'}
-                        </span>
+                      {/* Actions & Status Toggle */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                        <button onClick={() => { setModalType('nav_menu'); setModalItem(item); setModalOpen(true); }} style={{ background: '#334155', border: 'none', color: '#fff', padding: '8px 12px', borderRadius: '8px', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <i className="fa-solid fa-pen"></i> Edit
+                        </button>
+                        <button onClick={() => handleDeleteItem('nav_menu', item.id)} style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', padding: '8px 12px', borderRadius: '8px', fontSize: '0.85rem', cursor: 'pointer' }}>
+                          <i className="fa-solid fa-trash"></i>
+                        </button>
                         <button
                           type="button"
                           onClick={() => toggleNavVisibility(item.id)}
@@ -749,14 +799,51 @@ function App() {
 
         {/* CRUD MODAL POPUP */}
         {modalOpen && (
-          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-            <div style={{ width: '100%', maxWidth: '500px', background: '#0f172a', border: '1px solid #334155', borderRadius: '20px', padding: '28px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}>
+          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+            <div style={{ width: '100%', maxWidth: '550px', background: '#0f172a', border: '1px solid #334155', borderRadius: '20px', padding: '28px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', maxHeight: '90vh', overflowY: 'auto' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fff', textTransform: 'capitalize' }}>Manage {modalType}</h3>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fff', textTransform: 'capitalize' }}>Manage {modalType.replace('_', ' ')}</h3>
                 <button onClick={() => setModalOpen(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '1.2rem', cursor: 'pointer' }}>&times;</button>
               </div>
 
               <form onSubmit={handleSaveModalItem}>
+                {modalType === 'nav_menu' && (
+                  <>
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '6px' }}>Menu Label Title</label>
+                      <input type="text" style={{ width: '100%', padding: '10px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff' }} value={modalItem.label || ''} onChange={(e) => setModalItem({ ...modalItem, label: e.target.value })} placeholder="e.g. Services / Certifications" required />
+                    </div>
+                    
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '6px' }}>Routing Type</label>
+                      <select style={{ width: '100%', padding: '10px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff' }} value={modalItem.type || 'section'} onChange={(e) => setModalItem({ ...modalItem, type: e.target.value })}>
+                        <option value="section">📜 Same Page Scroll (#section_id)</option>
+                        <option value="route">📍 Dedicated New Page Route (/custom-route)</option>
+                        <option value="external">🔗 External Link (https://...)</option>
+                      </select>
+                    </div>
+
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '6px' }}>
+                        {modalItem.type === 'route' ? 'New Page Path (e.g. /services)' : modalItem.type === 'external' ? 'External URL (e.g. https://github.com)' : 'Section Anchor ID (e.g. about)'}
+                      </label>
+                      <input type="text" style={{ width: '100%', padding: '10px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff' }} value={modalItem.target || ''} onChange={(e) => setModalItem({ ...modalItem, target: e.target.value })} required />
+                    </div>
+
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '6px' }}>FontAwesome Icon Class</label>
+                      <input type="text" style={{ width: '100%', padding: '10px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff' }} value={modalItem.icon || 'fa-solid fa-link'} onChange={(e) => setModalItem({ ...modalItem, icon: e.target.value })} required />
+                    </div>
+
+                    {modalItem.type === 'route' && (
+                      <div style={{ marginBottom: '16px' }}>
+                        <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '6px' }}>Dynamic Page HTML / Markdown Content</label>
+                        <textarea rows="5" style={{ width: '100%', padding: '10px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#fff', fontFamily: 'monospace' }} value={modalItem.page_content || ''} onChange={(e) => setModalItem({ ...modalItem, page_content: e.target.value })} placeholder="Enter HTML content to display on this custom route page..."></textarea>
+                      </div>
+                    )}
+                  </>
+                )}
+
                 {modalType === 'project' && (
                   <>
                     <div style={{ marginBottom: '16px' }}>
@@ -810,6 +897,56 @@ function App() {
   }
 
   // ==========================================
+  // ROUTE: Dynamic Custom Route Page Renderer (e.g. /services, /certifications)
+  // ==========================================
+  const activeCustomMenu = navMenus.find(m => m.type === 'route' && m.target === route);
+  if (activeCustomMenu && route !== '/' && !route.startsWith('/admin')) {
+    return (
+      <div className="portfolio-app" style={{ minHeight: '100vh', background: '#090d16', color: '#fff' }}>
+        <div className="bg-glow bg-glow-1"></div>
+        
+        {/* Navbar */}
+        <header className="navbar scrolled">
+          <div className="container nav-container">
+            <a href="/" className="logo" onClick={(e) => { e.preventDefault(); navigateTo('/'); }}>
+              <span className="logo-accent">&lt;</span>Amarnath<span className="logo-accent">/&gt;</span>
+            </a>
+            <nav className="nav-menu">
+              <button className="nav-link" onClick={() => navigateTo('/')}><i className="fa-solid fa-arrow-left"></i> Back to Home</button>
+            </nav>
+          </div>
+        </header>
+
+        {/* Dynamic Page Hero */}
+        <div className="container" style={{ paddingTop: '120px', paddingBottom: '60px' }}>
+          <div style={{ background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '24px', padding: '40px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
+              <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'rgba(99, 102, 241, 0.2)', color: '#818cf8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.6rem' }}>
+                <i className={activeCustomMenu.icon}></i>
+              </div>
+              <div>
+                <h1 style={{ fontSize: '2.2rem', fontWeight: 800 }}>{activeCustomMenu.label}</h1>
+                <p style={{ color: '#94a3b8', fontSize: '0.95rem' }}>Dynamic Page • Route: {activeCustomMenu.target}</p>
+              </div>
+            </div>
+
+            <div 
+              style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.8', marginTop: '28px', borderTop: '1px solid #1e293b', paddingTop: '28px' }}
+              dangerouslySetInnerHTML={{ __html: activeCustomMenu.page_content || `<p>Welcome to <strong>${activeCustomMenu.label}</strong> page! You can edit this dynamic page content anytime from the Admin Dashboard Header Navigation Manager.</p>` }}
+            />
+
+            <div style={{ marginTop: '40px' }}>
+              <button onClick={() => navigateTo('/')} className="btn btn-primary">
+                <i className="fa-solid fa-house"></i> Return to Main Portfolio
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ==========================================
   // ROUTE: Main Portfolio Landing Page (https://amarnath.info/)
   // ==========================================
   if (loading || !data) {
@@ -828,7 +965,7 @@ function App() {
       <div className="bg-glow bg-glow-1"></div>
       <div className="bg-glow bg-glow-2"></div>
 
-      {/* Navbar with Dynamic Visibility Filter */}
+      {/* Navbar with Dynamic Header CMS Links */}
       <header className={`navbar ${scrolled ? 'scrolled' : ''}`}>
         <div className="container nav-container">
           <a href="#hero" className="logo" onClick={(e) => { e.preventDefault(); scrollTo('hero'); }}>
@@ -840,7 +977,7 @@ function App() {
                 key={menu.id} 
                 className={`nav-link ${menu.isBtn ? 'nav-btn' : ''}`}
                 style={menu.id === 'admin' ? { color: '#818cf8' } : {}}
-                onClick={() => menu.target.startsWith('/') ? navigateTo(menu.target) : scrollTo(menu.target)}
+                onClick={() => handleNavClick(menu)}
               >
                 <i className={menu.icon}></i> {menu.label}
               </button>

@@ -8,6 +8,7 @@ $basePath = file_exists(__DIR__.'/backend/routes/api.php') ? __DIR__.'/backend' 
 
 return Application::configure(basePath: $basePath)
     ->withRouting(
+        web: $basePath.'/routes/web.php',
         api: $basePath.'/routes/api.php',
         health: '/up',
     )

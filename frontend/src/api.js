@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-// Base API Configuration dynamically connecting to production Render API or local dev
+// Base API Configuration connecting to custom domain admin.amarnath.info
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:8000/api'
-  : 'https://amarnath-portfolio-app.onrender.com/api';
+  : 'https://admin.amarnath.info/api';
 
 export const fetchPortfolioData = async () => {
   try {

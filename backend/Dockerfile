@@ -11,15 +11,13 @@ COPY . .
 
 RUN if [ -f "backend/composer.json" ]; then cp -rn backend/* . ; fi
 
-RUN echo "APP_NAME=Laravel\nAPP_ENV=production\nAPP_KEY=\nAPP_DEBUG=false\nAPP_URL=http://localhost\nDB_CONNECTION=sqlite" > .env
+RUN echo "APP_NAME=Laravel\nAPP_ENV=production\nAPP_KEY=base64:7q6V+9H3gL/3f0M2P9k+X1K0N1P2Q3R4S5T6U7V8W9X=\nAPP_DEBUG=false\nAPP_URL=http://localhost\nDB_CONNECTION=sqlite" > .env
 RUN mkdir -p database && touch database/database.sqlite
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 RUN composer update --no-dev --optimize-autoloader --no-scripts --no-interaction
 
-RUN php artisan key:generate
-
 EXPOSE 10000
 
-CMD php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=10000
+CMD php artisan key:generate --force && php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=10000

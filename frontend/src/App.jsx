@@ -1433,69 +1433,152 @@ function App() {
           </div>
 
           {/* Hero Visual Card: Enterprise System Architecture Spec */}
-          <div className="hero-visual">
-            <div style={{ 
+          <div className="hero-visual animate-fade-right delay-2">
+            <div className="glass-card" style={{ 
               background: 'rgba(15, 23, 42, 0.85)', 
-              backdropFilter: 'blur(20px)', 
+              backdropFilter: 'blur(24px)', 
               border: '1px solid rgba(99, 102, 241, 0.35)', 
-              borderRadius: '24px', 
+              borderRadius: '28px', 
               padding: '32px', 
-              boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.7)',
+              boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(99, 102, 241, 0.15)',
               position: 'relative',
               overflow: 'hidden'
             }}>
-              {/* Card Top Title & Status */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '16px' }}>
+              {/* Top Accent Light Bar */}
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #38bdf8 100%)' }}></div>
+
+              {/* Card Header & Status */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                  <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.25rem', fontWeight: 800 }}>
-                    <i className="fa-solid fa-server"></i>
+                  <div style={{ width: '46px', height: '46px', borderRadius: '16px', background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.3rem', fontWeight: 800, boxShadow: '0 8px 20px rgba(99, 102, 241, 0.4)' }}>
+                    <i className="fa-solid fa-microchip"></i>
                   </div>
                   <div>
-                    <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff' }}>Enterprise Core Architecture</h3>
-                    <span style={{ fontSize: '0.78rem', color: '#38bdf8', fontWeight: 600 }}>Production System Engine • amarnath.info</span>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.3px' }}>Enterprise Core Architecture</h3>
+                    <span style={{ fontSize: '0.8rem', color: '#38bdf8', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                      <span className="pulse-dot" style={{ width: '7px', height: '7px', background: '#38bdf8' }}></span> Production Engine • amarnath.info
+                    </span>
                   </div>
                 </div>
-                <span style={{ background: 'rgba(34, 197, 94, 0.15)', border: '1px solid rgba(34, 197, 94, 0.3)', color: '#4ade80', fontSize: '0.75rem', padding: '6px 12px', borderRadius: '20px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e' }}></span> Live API Synced
-                </span>
-              </div>
 
-              {/* Architectural Modules Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
-                <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '16px', padding: '18px' }}>
-                  <div style={{ color: '#818cf8', fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>RESTful Backend</div>
-                  <div style={{ color: '#fff', fontWeight: 800, fontSize: '1rem' }}>Laravel 11.x Core</div>
-                  <div style={{ color: '#94a3b8', fontSize: '0.78rem', marginTop: '4px' }}>Sanctum Auth • Redis Queue</div>
-                </div>
-
-                <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '16px', padding: '18px' }}>
-                  <div style={{ color: '#c084fc', fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Frontend SPA</div>
-                  <div style={{ color: '#fff', fontWeight: 800, fontSize: '1rem' }}>React 18 Engine</div>
-                  <div style={{ color: '#94a3b8', fontSize: '0.78rem', marginTop: '4px' }}>Vite • Dark Glassmorphism</div>
-                </div>
-
-                <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '16px', padding: '18px' }}>
-                  <div style={{ color: '#38bdf8', fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>AI Biometrics</div>
-                  <div style={{ color: '#fff', fontWeight: 800, fontSize: '1rem' }}>AWS Rekognition</div>
-                  <div style={{ color: '#94a3b8', fontSize: '0.78rem', marginTop: '4px' }}>Real-time Face Vectoring</div>
-                </div>
-
-                <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '16px', padding: '18px' }}>
-                  <div style={{ color: '#facc15', fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Visual Block CMS</div>
-                  <div style={{ color: '#fff', fontWeight: 800, fontSize: '1rem' }}>WordPress Builder</div>
-                  <div style={{ color: '#94a3b8', fontSize: '0.78rem', marginTop: '4px' }}>Dynamic Page Router</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ background: 'rgba(34, 197, 94, 0.15)', border: '1px solid rgba(34, 197, 94, 0.35)', color: '#4ade80', fontSize: '0.78rem', padding: '6px 14px', borderRadius: '20px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 0 15px rgba(34, 197, 94, 0.2)' }}>
+                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', animation: 'pulseGlow 1.5s infinite' }}></span> Live API Synced
+                  </span>
                 </div>
               </div>
 
-              {/* Live Metric Stats Bar */}
-              <div style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(56, 189, 248, 0.15) 100%)', border: '1px solid rgba(99, 102, 241, 0.3)', borderRadius: '16px', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              {/* Interactive Card View Switcher Tabs */}
+              <div style={{ display: 'flex', gap: '8px', background: 'rgba(30, 41, 59, 0.7)', padding: '6px', borderRadius: '14px', marginBottom: '22px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <button 
+                  onClick={() => setActiveCodeTab('api')}
+                  style={{ flex: 1, padding: '8px 12px', background: activeCodeTab === 'api' ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' : 'transparent', color: activeCodeTab === 'api' ? '#fff' : '#94a3b8', border: 'none', borderRadius: '10px', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.3s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                >
+                  <i className="fa-solid fa-cubes"></i> System Modules
+                </button>
+                <button 
+                  onClick={() => setActiveCodeTab('json')}
+                  style={{ flex: 1, padding: '8px 12px', background: activeCodeTab === 'json' ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' : 'transparent', color: activeCodeTab === 'json' ? '#fff' : '#94a3b8', border: 'none', borderRadius: '10px', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.3s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                >
+                  <i className="fa-solid fa-code"></i> Live REST JSON
+                </button>
+                <button 
+                  onClick={() => setActiveCodeTab('telemetry')}
+                  style={{ flex: 1, padding: '8px 12px', background: activeCodeTab === 'telemetry' ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' : 'transparent', color: activeCodeTab === 'telemetry' ? '#fff' : '#94a3b8', border: 'none', borderRadius: '10px', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.3s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                >
+                  <i className="fa-solid fa-chart-line"></i> Metrics
+                </button>
+              </div>
+
+              {/* TAB 1: SYSTEM MODULES GRID */}
+              {activeCodeTab === 'api' && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+                  <div className="glass-card" style={{ background: 'rgba(30, 41, 59, 0.65)', border: '1px solid rgba(99, 102, 241, 0.25)', borderRadius: '18px', padding: '18px', position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <span style={{ color: '#818cf8', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>RESTful Backend</span>
+                      <i className="fa-brands fa-laravel" style={{ color: '#f87171', fontSize: '1.1rem' }}></i>
+                    </div>
+                    <div style={{ color: '#fff', fontWeight: 800, fontSize: '1.05rem' }}>Laravel 11.x Core</div>
+                    <div style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: '4px' }}>Sanctum Auth • Redis Queue</div>
+                  </div>
+
+                  <div className="glass-card" style={{ background: 'rgba(30, 41, 59, 0.65)', border: '1px solid rgba(168, 85, 247, 0.25)', borderRadius: '18px', padding: '18px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <span style={{ color: '#c084fc', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Frontend SPA</span>
+                      <i className="fa-brands fa-react" style={{ color: '#38bdf8', fontSize: '1.1rem' }}></i>
+                    </div>
+                    <div style={{ color: '#fff', fontWeight: 800, fontSize: '1.05rem' }}>React 18 Engine</div>
+                    <div style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: '4px' }}>Vite • Dark Glassmorphism</div>
+                  </div>
+
+                  <div className="glass-card" style={{ background: 'rgba(30, 41, 59, 0.65)', border: '1px solid rgba(56, 189, 248, 0.25)', borderRadius: '18px', padding: '18px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <span style={{ color: '#38bdf8', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>AI Biometrics</span>
+                      <i className="fa-solid fa-face-smile" style={{ color: '#facc15', fontSize: '1.1rem' }}></i>
+                    </div>
+                    <div style={{ color: '#fff', fontWeight: 800, fontSize: '1.05rem' }}>AWS Rekognition</div>
+                    <div style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: '4px' }}>Real-time Face Vectoring</div>
+                  </div>
+
+                  <div className="glass-card" style={{ background: 'rgba(30, 41, 59, 0.65)', border: '1px solid rgba(250, 204, 21, 0.25)', borderRadius: '18px', padding: '18px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <span style={{ color: '#facc15', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Visual Block CMS</span>
+                      <i className="fa-brands fa-wordpress" style={{ color: '#60a5fa', fontSize: '1.1rem' }}></i>
+                    </div>
+                    <div style={{ color: '#fff', fontWeight: 800, fontSize: '1.05rem' }}>WordPress Builder</div>
+                    <div style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: '4px' }}>Dynamic Page Router</div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 2: LIVE REST JSON TELEMETRY */}
+              {activeCodeTab === 'json' && (
+                <div style={{ background: '#090d16', border: '1px solid rgba(99, 102, 241, 0.3)', borderRadius: '16px', padding: '16px', fontFamily: "'Fira Code', 'Courier New', monospace", fontSize: '0.8rem', color: '#38bdf8', marginBottom: '24px', lineHeight: '1.6', overflowX: 'auto' }}>
+                  <div style={{ color: '#64748b', marginBottom: '8px' }}>// GET https://api.amarnath.info/v1/system-status</div>
+                  <div>&#123;</div>
+                  <div style={{ paddingLeft: '16px' }}>"<span style={{ color: '#a855f7' }}>status</span>": "<span style={{ color: '#4ade80' }}>200 OK</span>",</div>
+                  <div style={{ paddingLeft: '16px' }}>"<span style={{ color: '#a855f7' }}>architect</span>": "<span style={{ color: '#facc15' }}>Amarnath</span>",</div>
+                  <div style={{ paddingLeft: '16px' }}>"<span style={{ color: '#a855f7' }}>stack</span>": &#123; "<span style={{ color: '#38bdf8' }}>backend</span>": "<span style={{ color: '#f87171' }}>Laravel 11.55</span>", "<span style={{ color: '#38bdf8' }}>frontend</span>": "<span style={{ color: '#60a5fa' }}>React 18</span>" &#125;,</div>
+                  <div style={{ paddingLeft: '16px' }}>"<span style={{ color: '#a855f7' }}>ai_engine</span>": "<span style={{ color: '#34d399' }}>AWS Rekognition Vector Match</span>",</div>
+                  <div style={{ paddingLeft: '16px' }}>"<span style={{ color: '#a855f7' }}>latencies_ms</span>": [ 12, 14, 18, 9 ]</div>
+                  <div>&#125;</div>
+                </div>
+              )}
+
+              {/* TAB 3: LIVE SYSTEM METRICS */}
+              {activeCodeTab === 'telemetry' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#cbd5e1', fontSize: '0.8rem', fontWeight: 600, marginBottom: '4px' }}>
+                      <span>API Response Latency</span>
+                      <span style={{ color: '#4ade80', fontWeight: 800 }}>14 ms (Sub-20ms Peak)</span>
+                    </div>
+                    <div style={{ height: '6px', background: 'rgba(255,255,255,0.08)', borderRadius: '3px', overflow: 'hidden' }}>
+                      <div style={{ width: '88%', height: '100%', background: 'linear-gradient(90deg, #22c55e 0%, #38bdf8 100%)' }}></div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#cbd5e1', fontSize: '0.8rem', fontWeight: 600, marginBottom: '4px' }}>
+                      <span>Face Recognition Accuracy</span>
+                      <span style={{ color: '#818cf8', fontWeight: 800 }}>99.98% Confidence</span>
+                    </div>
+                    <div style={{ height: '6px', background: 'rgba(255,255,255,0.08)', borderRadius: '3px', overflow: 'hidden' }}>
+                      <div style={{ width: '99%', height: '100%', background: 'linear-gradient(90deg, #6366f1 0%, #a855f7 100%)' }}></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Bottom Performance & Admin Action Bar */}
+              <div style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.18) 0%, rgba(56, 189, 248, 0.18) 100%)', border: '1px solid rgba(99, 102, 241, 0.35)', borderRadius: '18px', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.5px' }}>Performance Uptime</div>
-                  <div style={{ color: '#34d399', fontWeight: 800, fontSize: '0.95rem', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <i className="fa-solid fa-bolt"></i> 99.9% Uptime • &lt; 28ms Latency
+                  <div style={{ color: '#94a3b8', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.5px' }}>Performance SLA</div>
+                  <div style={{ color: '#34d399', fontWeight: 800, fontSize: '0.95rem', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i className="fa-solid fa-bolt" style={{ color: '#facc15' }}></i> 99.9% Production Uptime
                   </div>
                 </div>
-                <button onClick={() => navigateTo('/admin/login')} style={{ background: 'var(--primary-gradient)', border: 'none', color: '#fff', padding: '10px 18px', borderRadius: '12px', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 14px rgba(99, 102, 241, 0.4)' }}>
+                <button onClick={() => navigateTo('/admin/login')} className="btn btn-primary" style={{ padding: '10px 18px', borderRadius: '12px', fontSize: '0.85rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 16px rgba(99, 102, 241, 0.5)' }}>
                   <i className="fa-solid fa-lock"></i> Admin Portal
                 </button>
               </div>

@@ -75,6 +75,39 @@ function App() {
   });
   const [navSaveStatus, setNavSaveStatus] = useState('');
 
+  // Animated Typing Subtitle State
+  const TYPING_PHRASES = [
+    "Senior Full Stack & API Architect",
+    "Laravel 11 & React 18 Specialist",
+    "Facial Biometric & AI Developer",
+    "High-Concurrency System Engineer"
+  ];
+  const [typingIndex, setTypingIndex] = useState(0);
+  const [typedText, setTypedText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const currentPhrase = TYPING_PHRASES[typingIndex];
+    const speed = isDeleting ? 35 : 75;
+
+    const timeout = setTimeout(() => {
+      if (!isDeleting) {
+        setTypedText(currentPhrase.substring(0, typedText.length + 1));
+        if (typedText === currentPhrase) {
+          setTimeout(() => setIsDeleting(true), 2200);
+        }
+      } else {
+        setTypedText(currentPhrase.substring(0, typedText.length - 1));
+        if (typedText === '') {
+          setIsDeleting(false);
+          setTypingIndex((prev) => (prev + 1) % TYPING_PHRASES.length);
+        }
+      }
+    }, speed);
+
+    return () => clearTimeout(timeout);
+  }, [typedText, isDeleting, typingIndex]);
+
   // Admin Dashboard State
   const [loginForm, setLoginForm] = useState({ email: 'admin@amarnath.info', password: '' });
   const [loginError, setLoginError] = useState('');
@@ -1345,7 +1378,7 @@ function App() {
       {/* Hero Section */}
       <section className="hero" id="hero">
         <div className="container hero-container">
-          <div className="hero-content">
+          <div className="hero-content animate-fade-left">
             <div className="badge-pill">
               <span className="pulse-dot"></span> Available for Lead Backend & Full Stack Architect Roles
             </div>
@@ -1353,7 +1386,9 @@ function App() {
             <h1 className="hero-title">
               Senior Full Stack & <span className="gradient-text">API Architect</span>
             </h1>
-            <h2 className="hero-subtitle">Building Scalable Enterprise ERP Engines & Biometric AI Systems</h2>
+            <h2 className="hero-subtitle">
+              {typedText}<span className="typing-cursor"></span>
+            </h2>
             
             <p className="hero-description">
               5+ years of expertise specializing in high-concurrency Laravel 11 backends, decoupled React SPAs, AWS Rekognition facial biometric integrations, and enterprise database query optimization.
@@ -1472,32 +1507,32 @@ function App() {
       {/* Strengths & Architecture Highlights */}
       <section className="section" id="about">
         <div className="container">
-          <div className="section-header">
+          <div className="section-header animate-fade-up">
             <span className="section-subtitle">CORE CAPABILITIES</span>
             <h2 className="section-title">Enterprise Systems Architecture</h2>
             <p className="section-desc">Designed to scale under heavy enterprise loads with decoupled API architectures and modern React UI components.</p>
           </div>
 
           <div className="strengths-grid">
-            <div className="strength-card">
+            <div className="strength-card animate-fade-up delay-1">
               <div className="strength-icon"><i className="fa-solid fa-server"></i></div>
               <h3>Scalable Microservices & REST API</h3>
               <p>Designing clean, secure, and documented RESTful APIs in Laravel 11 connected with Redis queue workers and high-speed MySQL queries.</p>
             </div>
 
-            <div className="strength-card">
+            <div className="strength-card animate-fade-up delay-2">
               <div className="strength-icon"><i className="fa-solid fa-face-smile"></i></div>
               <h3>Biometric AI & Face Recognition</h3>
               <p>Integrating AWS Rekognition facial comparison vector engines for real-time automated employee attendance and security checks.</p>
             </div>
 
-            <div className="strength-card">
+            <div className="strength-card animate-fade-up delay-3">
               <div className="strength-icon"><i className="fa-solid fa-layer-group"></i></div>
               <h3>Decoupled React 18 SPA & CMS</h3>
               <p>Building high-performance single page applications with dynamic Gutenberg/Elementor-style visual block content management systems.</p>
             </div>
 
-            <div className="strength-card">
+            <div className="strength-card animate-fade-up delay-4">
               <div className="strength-icon"><i className="fa-solid fa-file-excel"></i></div>
               <h3>Enterprise ERP & Attendance Engine</h3>
               <p>Developed FixHR ERP modules: multi-sheet Excel parsers, automated shift resolvers, overtime calculators, and payroll generators.</p>
@@ -1509,21 +1544,21 @@ function App() {
       {/* Skills */}
       <section className="section section-dark" id="skills">
         <div className="container">
-          <div className="section-header">
+          <div className="section-header animate-fade-up">
             <span className="section-subtitle">TECHNICAL EXPERTISE</span>
             <h2 className="section-title">Technology Stack & Tools</h2>
             <p className="section-desc">Hand-picked battle-tested technologies for modern web performance and developer productivity.</p>
           </div>
 
           <div className="skills-wrapper">
-            {skills && Object.keys(skills).map((catKey) => (
-              <div key={catKey} className="skill-category">
+            {skills && Object.keys(skills).map((catKey, idx) => (
+              <div key={catKey} className={`skill-category animate-fade-up delay-${(idx % 4) + 1}`}>
                 <h3 className="category-title" style={{ textTransform: 'capitalize' }}>
                   <i className="fa-solid fa-code"></i> {catKey}
                 </h3>
                 <div className="skill-tags">
-                  {skills[catKey].map((s, idx) => (
-                    <span key={idx} className={`skill-tag ${s.is_highlighted ? 'highlighted' : ''}`}>
+                  {skills[catKey].map((s, i) => (
+                    <span key={i} className={`skill-tag ${s.is_highlighted ? 'highlighted' : ''}`}>
                       <i className={s.icon}></i> {s.name}
                     </span>
                   ))}
@@ -1537,14 +1572,14 @@ function App() {
       {/* Professional Experience */}
       <section className="section" id="experience">
         <div className="container">
-          <div className="section-header">
+          <div className="section-header animate-fade-up">
             <span className="section-subtitle">CAREER TRACK RECORD</span>
             <h2 className="section-title">Professional Work Experience</h2>
           </div>
 
           <div className="timeline">
             {experiences && experiences.map((exp, idx) => (
-              <div key={idx} className="timeline-item">
+              <div key={idx} className="timeline-item animate-fade-left">
                 <div className="timeline-dot"></div>
                 <div className="timeline-content">
                   <div className="exp-header">
@@ -1567,13 +1602,13 @@ function App() {
       {/* Projects */}
       <section className="section section-dark" id="projects">
         <div className="container">
-          <div className="section-header">
+          <div className="section-header animate-fade-up">
             <span className="section-subtitle">FEATURED PORTFOLIO</span>
             <h2 className="section-title">Key Projects & Deliverables</h2>
             <p className="section-desc">Production systems developed for enterprise HRMS, dynamic content engines, and SaaS platforms.</p>
           </div>
 
-          <div className="project-filters">
+          <div className="project-filters animate-fade-up">
             {['all', 'enterprise', 'custom', 'cms'].map((cat) => (
               <button key={cat} className={`filter-btn ${filter === cat ? 'active' : ''}`} onClick={() => setFilter(cat)}>
                 {cat.toUpperCase()}
@@ -1582,8 +1617,8 @@ function App() {
           </div>
 
           <div className="projects-grid">
-            {filteredProjects && filteredProjects.map((p) => (
-              <div key={p.id} className="project-card">
+            {filteredProjects && filteredProjects.map((p, idx) => (
+              <div key={p.id} className={`project-card animate-zoom-in delay-${(idx % 3) + 1}`}>
                 <div className="project-banner">
                   <span className="project-tag">{p.tag}</span>
                   <div className="project-icon"><i className={`fa-solid ${p.icon}`}></i></div>
@@ -1606,14 +1641,14 @@ function App() {
       {/* Education */}
       <section className="section">
         <div className="container">
-          <div className="section-header">
+          <div className="section-header animate-fade-up">
             <span className="section-subtitle">ACADEMIC BACKGROUND</span>
             <h2 className="section-title">Qualifications & Education</h2>
           </div>
 
           <div className="edu-grid">
             {education && education.map((edu, i) => (
-              <div key={i} className="edu-card">
+              <div key={i} className={`edu-card animate-fade-up delay-${i + 1}`}>
                 <div className="edu-icon"><i className={`fa-solid ${edu.icon}`}></i></div>
                 <div>
                   <h3>{edu.degree}</h3>
@@ -1629,7 +1664,7 @@ function App() {
       {/* Contact Section */}
       <section className="section section-dark" id="contact">
         <div className="container">
-          <div className="contact-box">
+          <div className="contact-box animate-fade-up">
             <div className="contact-info">
               <span className="section-subtitle">GET IN TOUCH</span>
               <h2 className="contact-title">Let's Build Something Exceptional</h2>

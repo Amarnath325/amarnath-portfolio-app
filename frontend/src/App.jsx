@@ -362,9 +362,9 @@ function App() {
   };
 
   // ==========================================
-  // ROUTE: Admin Login (https://amarnath.info/admin/login)
+  // ROUTE: Admin Login (https://amarnath.info/admin or /admin/login)
   // ==========================================
-  if (route === '/admin/login') {
+  if (route === '/admin/login' || route === '/admin') {
     return (
       <div className="portfolio-app" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#050811' }}>
         <div className="bg-glow bg-glow-1"></div>
@@ -1132,23 +1132,46 @@ function App() {
         <div className="bg-glow bg-glow-1"></div>
         <div className="bg-glow bg-glow-2"></div>
         
-        {/* Navbar */}
+        {/* Full-Width Glass Header */}
         <header className="navbar scrolled">
-          <div className="container nav-container">
+          <div className="nav-container">
+            {/* Zone 1: Logo */}
             <a href="/" className="logo" onClick={(e) => { e.preventDefault(); navigateTo('/'); }}>
-              <span className="logo-accent">&lt;</span>Amarnath<span className="logo-accent">/&gt;</span>
+              <div className="logo-icon">
+                <i className="fa-solid fa-code"></i>
+              </div>
+              <span>Amarnath<span style={{ color: 'var(--primary-light)' }}>.info</span></span>
             </a>
+
+            {/* Zone 2: Center Navigation Capsule */}
             <nav className="nav-menu">
-              {navMenus.filter(m => m.visible).map((menu) => (
+              {navMenus.filter(m => m.visible && !m.isBtn && m.id !== 'admin').map((menu) => (
                 <button 
                   key={menu.id} 
-                  className={`nav-link ${menu.isBtn ? 'nav-btn' : ''}`}
+                  className="nav-link"
                   onClick={() => handleNavClick(menu)}
                 >
                   <i className={menu.icon}></i> {menu.label}
                 </button>
               ))}
             </nav>
+
+            {/* Zone 3: Right Action Buttons */}
+            <div className="nav-actions">
+              <button 
+                className="nav-btn-admin"
+                onClick={() => navigateTo('/admin/login')}
+              >
+                <i className="fa-solid fa-shield-halved"></i> Admin
+              </button>
+
+              <button 
+                className="nav-btn-cta"
+                onClick={() => navigateTo('/')}
+              >
+                <i className="fa-solid fa-house"></i> Home
+              </button>
+            </div>
           </div>
         </header>
 
